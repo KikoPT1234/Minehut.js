@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "outDir": "./public",
+        "noImplicitAny": true,
+        "watch": true,
+        "target": "ESNext"
+    }
+}
