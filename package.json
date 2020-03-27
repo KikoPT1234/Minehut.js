@@ -1,6 +1,6 @@
 {
   "name": "minehut.js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A library for interacting with the Minehut API.",
   "main": "generated/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "url": "git+https://github.com/KikoPT1234/Minehut.js.git"
   },
   "author": "KikoPT1234",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/KikoPT1234/Minehut.js/issues"
   },
