@@ -1,5 +1,7 @@
-import Icon = require("../classes/Icon");
-import ServerProperties from "./ServerProperties";
+import {Icon} from "../classes/Icon"
+import ServerProperties from "./ServerProperties"
+import Collection from "@discordjs/collection"
+import {Plugin} from "../classes/Plugin"
 export default interface ServerDictionary {
     id: string
     owner: string
@@ -17,12 +19,20 @@ export default interface ServerDictionary {
     offer: string
     serverProperties: ServerProperties
     suspended: boolean
-    purchasedIcons?: Icon[]
+    purchasedIcons?: Collection<string, Icon>
+    purchasedIconIds?: string[]
     icon?: Icon
-    activePlugins: string[]
-    purchasedPlugins: string[]
-    pluginsLoaded: string[]
+    iconId?: string
+    iconName?: string
     online: boolean
     maxPlayers: number
     playerCount: number
+    activePlugins?: Collection<string, Plugin>
+    activePluginIds: string[]
+    purchasedPlugins?: Collection<string, Plugin>
+    purchasedPluginIds: string[]
+    loadedPlugins?: Collection<string, Plugin>
+    loadedPluginIds: string[]
+    fetchPlugins(): Promise<void>
+    fetchIcons(): Promise<void>
 }

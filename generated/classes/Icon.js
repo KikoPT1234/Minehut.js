@@ -1,5 +1,6 @@
 "use strict";
-module.exports = class Icon {
+Object.defineProperty(exports, "__esModule", { value: true });
+class Icon {
     constructor(icon) {
         if (!icon)
             throw new Error("Icon not specified");
@@ -14,4 +15,5 @@ module.exports = class Icon {
             this[key] = icon[i];
         }
     }
-};
+}
+exports.Icon = Icon;

@@ -1,5 +1,5 @@
 import IconDictionary from "../interfaces/IconDictionary"
-export = class Icon implements IconDictionary {
+export class Icon implements IconDictionary {
     id: string
     displayName: string
     iconName: string

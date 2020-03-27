@@ -1,69 +1,89 @@
 const fetch = require("node-fetch")
-import Server = require("./classes/Server")
-import Session = require("./classes/Session")
-import Icon = require("./classes/Icon")
-import Plugin = require("./classes/Plugin")
+import Collection from "@discordjs/collection"
+import {Server} from "./classes/Server"
+import {Session} from "./classes/Session"
+import {Icon} from "./classes/Icon"
+import {Plugin} from "./classes/Plugin"
 import MHServerObj from "./interfaces/MHServerObj"
-const Minehut: {
-    servers: Server[]
-    plugins: Plugin[]
-    icons: Icon[]
-    init(): Promise<void>
-    getServer(name: string | Server, byName?: boolean): Promise<Server>
-    getPlugin(name: string, byName?: boolean): Plugin
-    getIcon(name: string, byName?: boolean): Icon
+import { getServers } from "dns"
+type ID = string
+
+function getId(id: string): ID {
+    if (id.length !== 24 || id.toLowerCase() !== id) throw new TypeError("Not a valid ID.")
+    return id as ID
+}
+
+interface Minehut {
+    getServers(): Promise<Collection<ID, Server>>
+    getServer(name: string, byName?: boolean): Promise<Server>
+    getPlugins(): Promise<Collection<ID, Plugin>>
+    getPlugin(name: string, byName?: boolean): Promise<Plugin>
+    getIcons(): Promise<Collection<ID, Icon>>
+    getIcon(name: string, byName?: boolean): Promise<Icon>
+    getPlayerCount(separated?: boolean): Promise<number | {lobbies: number, servers: number}>
+
     Session: Session
-    initialized: boolean
-} = {
-    Session,
-    initialized: false,
-    servers: [],
-    plugins: [],
-    icons: [],
-    async getServer(server: Server | string, byName: boolean = true): Promise<Server> {
-        if (!this.initialized) throw new Error("Not initialized.")
-        let res: Response
-        if (server instanceof Server)
-            res = await fetch(`https://api.minehut.com/server/${server.id}`)
-        else
-            res = await fetch(`https://api.minehut.com/server/${server}${byName ? "?byName=true" : ""}`)
-        if (res.status !== 200) throw new Error("Server not found.")
-        const s = await res.json()
-        const returnServer = new Server(s.server)
+}
+
+const Minehut: Minehut = {
+    async getServers() {
+        let servers = await fetch("https://api.minehut.com/servers")
+        servers = await servers.json()
+        const collection: Collection<ID, Server> = new Collection()
+        servers.servers.forEach(server => {
+            server = new Server(server)
+            collection.set(getId(server.id), server)
+        })
+        return collection
+    },
+    async getServer(name: string, byName: boolean = true) {
+        let server = await fetch(`https://api.minehut.com/server/${name}${byName ? "?byName=true" : ""}`)
+        if (server.status === 502) throw new Error("Server not found.")
+        else if (server.status !== 200) throw new Error(`There was an error while trying to fetch ${name}.`)
+        server = await server.json()
+        const returnServer = new Server(server.server)
         return returnServer
     },
-    getIcon(name: string, byName: boolean = true): Icon {
-        if (!this.initialized) throw new Error("Not initialized.")
-        const icon = this.icons.find((i: Icon) => (byName && i.iconName.toLowerCase() === name.toLowerCase()) || (!byName && i.id === name))
-        if (!icon) throw new Error("Icon not found.")
-        return icon
+    async getPlugins() {
+        let plugins = await fetch("https://api.minehut.com/plugins_public")
+        plugins = (await plugins.json()).all
+        const collection: Collection<ID, Plugin> = new Collection()
+        plugins.forEach(plugin => {
+            plugin = new Plugin(plugin)
+            collection.set(getId(plugin.id), plugin)
+        })
+        return collection
     },
-    getPlugin(name: string, byName: boolean = true) {
-        if (!this.initialized) throw new Error("Not initialized.")
-        const plugin = this.plugins.find((p: Plugin) => (byName && p.name.toLowerCase() === name.toLowerCase()) || (!byName && p.id === name))
+    async getPlugin(name: string, byName: boolean = true) {
+        const plugins = await this.getPlugins()
+        const plugin: Plugin = byName ? plugins.find(p => p.name === name) : plugins.get(this.getID(name))
         if (!plugin) throw new Error("Plugin not found.")
         return plugin
     },
-    async init(): Promise<void> {
-        if (this.initialized) throw new Error("Already initialized.")
-        this.initialized = true
-        await fetch("https://api.minehut.com/servers/icons")
-        .then(r => r.json())
-        .then(i => {
-            this.icons = i.map(i => new Icon(i))
+    async getIcons() {
+        let icons = await fetch("https://api.minehut.com/servers/icons")
+        icons = await icons.json()
+        const collection: Collection<ID, Icon> = new Collection()
+        icons.forEach(icon => {
+            icon = new Icon(icon)
+            collection.set(getId(icon.id), icon)
         })
-        await fetch("https://api.minehut.com/plugins_public")
-        .then(r => r.json())
-        .then(p => {
-            this.plugins = p.all.map(p => new Plugin(p))
-        })
-        await fetch("https://api.minehut.com/servers")
-        .then(r => r.json())
-        .then(s => {
-            this.servers = s.servers.map(s => new Server(s))
-        })
-        //await Promise.all([icons, plugins, servers])
-        return
-    }
+        return collection
+    },
+    async getIcon(name: string, byName: boolean = true) {
+        const icons = await this.getIcons()
+        const icon: Icon = byName ? icons.find(i => i.name === name) : icons.get(this.getID(name))
+        if (!icon) throw new Error("Plugin not found.")
+        return icon
+    },
+    async getPlayerCount(separated: boolean = false) {
+        const res: Response = await fetch("https://api.minehut.com/network/players/distribution")
+        const count = await res.json()
+        return separated ? count.lobby + count.player_server : {
+            lobbies: count.lobby,
+            servers: count.player_server
+        }
+    },
+    Session
 }
 export = Minehut

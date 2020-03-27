@@ -1,66 +1,78 @@
 "use strict";
 const fetch = require("node-fetch");
-const Server = require("./classes/Server");
-const Session = require("./classes/Session");
-const Icon = require("./classes/Icon");
-const Plugin = require("./classes/Plugin");
+const collection_1 = require("@discordjs/collection");
+const Server_1 = require("./classes/Server");
+const Session_1 = require("./classes/Session");
+const Icon_1 = require("./classes/Icon");
+const Plugin_1 = require("./classes/Plugin");
+function getId(id) {
+    if (id.length !== 24 || id.toLowerCase() !== id)
+        throw new TypeError("Not a valid ID.");
+    return id;
+}
 const Minehut = {
-    Session,
-    initialized: false,
-    servers: [],
-    plugins: [],
-    icons: [],
-    async getServer(server, byName = true) {
-        if (!this.initialized)
-            throw new Error("Not initialized.");
-        let res;
-        if (server instanceof Server)
-            res = await fetch(`https://api.minehut.com/server/${server.id}`);
-        else
-            res = await fetch(`https://api.minehut.com/server/${server}${byName ? "?byName=true" : ""}`);
-        if (res.status !== 200)
+    async getServers() {
+        let servers = await fetch("https://api.minehut.com/servers");
+        servers = await servers.json();
+        const collection = new collection_1.default();
+        servers.servers.forEach(server => {
+            server = new Server_1.Server(server);
+            collection.set(getId(server.id), server);
+        });
+        return collection;
+    },
+    async getServer(name, byName = true) {
+        let server = await fetch(`https://api.minehut.com/server/${name}${byName ? "?byName=true" : ""}`);
+        if (server.status === 502)
             throw new Error("Server not found.");
-        const s = await res.json();
-        const returnServer = new Server(s.server);
+        else if (server.status !== 200)
+            throw new Error(`There was an error while trying to fetch ${name}.`);
+        server = await server.json();
+        const returnServer = new Server_1.Server(server.server);
         return returnServer;
     },
-    getIcon(name, byName = true) {
-        if (!this.initialized)
-            throw new Error("Not initialized.");
-        const icon = this.icons.find((i) => (byName && i.iconName.toLowerCase() === name.toLowerCase()) || (!byName && i.id === name));
-        if (!icon)
-            throw new Error("Icon not found.");
-        return icon;
+    async getPlugins() {
+        let plugins = await fetch("https://api.minehut.com/plugins_public");
+        plugins = (await plugins.json()).all;
+        const collection = new collection_1.default();
+        plugins.forEach(plugin => {
+            plugin = new Plugin_1.Plugin(plugin);
+            collection.set(getId(plugin.id), plugin);
+        });
+        return collection;
     },
-    getPlugin(name, byName = true) {
-        if (!this.initialized)
-            throw new Error("Not initialized.");
-        const plugin = this.plugins.find((p) => (byName && p.name.toLowerCase() === name.toLowerCase()) || (!byName && p.id === name));
+    async getPlugin(name, byName = true) {
+        const plugins = await this.getPlugins();
+        const plugin = byName ? plugins.find(p => p.name === name) : plugins.get(this.getID(name));
         if (!plugin)
             throw new Error("Plugin not found.");
         return plugin;
     },
-    async init() {
-        if (this.initialized)
-            throw new Error("Already initialized.");
-        this.initialized = true;
-        await fetch("https://api.minehut.com/servers/icons")
-            .then(r => r.json())
-            .then(i => {
-            this.icons = i.map(i => new Icon(i));
+    async getIcons() {
+        let icons = await fetch("https://api.minehut.com/servers/icons");
+        icons = await icons.json();
+        const collection = new collection_1.default();
+        icons.forEach(icon => {
+            icon = new Icon_1.Icon(icon);
+            collection.set(getId(icon.id), icon);
         });
-        await fetch("https://api.minehut.com/plugins_public")
-            .then(r => r.json())
-            .then(p => {
-            this.plugins = p.all.map(p => new Plugin(p));
-        });
-        await fetch("https://api.minehut.com/servers")
-            .then(r => r.json())
-            .then(s => {
-            this.servers = s.servers.map(s => new Server(s));
-        });
-        //await Promise.all([icons, plugins, servers])
-        return;
-    }
+        return collection;
+    },
+    async getIcon(name, byName = true) {
+        const icons = await this.getIcons();
+        const icon = byName ? icons.find(i => i.name === name) : icons.get(this.getID(name));
+        if (!icon)
+            throw new Error("Plugin not found.");
+        return icon;
+    },
+    async getPlayerCount(separated = false) {
+        const res = await fetch("https://api.minehut.com/network/players/distribution");
+        const count = await res.json();
+        return separated ? count.lobby + count.player_server : {
+            lobbies: count.lobby,
+            servers: count.player_server
+        };
+    },
+    Session: Session_1.Session
 };
 module.exports = Minehut;

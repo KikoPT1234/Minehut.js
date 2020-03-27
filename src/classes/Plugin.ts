@@ -1,6 +1,6 @@
 import PluginDictionary from "../interfaces/PluginDictionary"
 
-export = class Plugin implements PluginDictionary {
+export class Plugin implements PluginDictionary {
     id: string
     name: string
     credits: number

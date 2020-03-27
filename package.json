@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/KikoPT1234/Minehut.js#readme",
   "dependencies": {
+    "@discordjs/collection": "^0.1.5",
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {

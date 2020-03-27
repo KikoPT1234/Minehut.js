@@ -1,5 +1,6 @@
 "use strict";
-module.exports = class Plugin {
+Object.defineProperty(exports, "__esModule", { value: true });
+class Plugin {
     constructor(plugin) {
         if (!plugin)
             throw new Error("Plugin not specified");
@@ -18,4 +19,5 @@ module.exports = class Plugin {
             this[key] = plugin[i];
         }
     }
-};
+}
+exports.Plugin = Plugin;
