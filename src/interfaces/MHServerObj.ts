@@ -1,5 +1,6 @@
-type Server = {
-    _id: string
+
+export default interface MHServerObj {
+    id: string
     owner: string
     name: string
     name_lower: string
@@ -16,8 +17,8 @@ type Server = {
     // @ts-ignore
     server_properties: ServerProperties
     suspended: boolean
-    // @ts-ignore
-    purchased_icons: Icon[]
+    icon?: string
+    purchased_icons?: string[]
     active_plugins: string[]
     purchased_plugins: string[]
     plugins_loaded: string[]

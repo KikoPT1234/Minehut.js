@@ -1,11 +1,11 @@
 {
   "name": "minehut.js",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "A library for interacting with the Minehut API.",
-  "main": "public/index.js",
+  "main": "generated/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node public/index.js"
+    "start": "node generated/index.js"
   },
   "repository": {
     "type": "git",
@@ -18,8 +18,10 @@
   },
   "homepage": "https://github.com/KikoPT1234/Minehut.js#readme",
   "dependencies": {
-    "@types/node": "^12.12.31",
-    "node-fetch": "^2.6.0",
-    "typescript": "^3.8.3"
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^3.8.3",
+    "@types/node": "^12.12.31"
   }
 }

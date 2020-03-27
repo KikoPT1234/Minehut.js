@@ -1,3 +1,5 @@
-module.exports = class Session {
-    
+export = class Session {
+    constructor(credentials: LoginCredentials) {
+        
+    }
 }
