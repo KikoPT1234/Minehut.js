@@ -4,7 +4,7 @@
 This library is still heavily under development, so don't expect much at the moment!
 
 ## About
-Minehut.js is a Node module that allows you to interact with the Minehut API.
+Minehut.js is a TypeScript and JavaScript library that allows you to interact with the Minehut API.
 
 ## Collections
 The library uses the `Collection` class from Discord.js due to its useful methods such as `find()`, `filter()` and `first()`. For more information, check the [Discord.js Documentation][Collection].
@@ -28,11 +28,11 @@ The `Minehut` object contains some methods and properties:
 
 * [`Session`](#session)
 * [`getServers()`](#getservers)
-* [`getServer(name: string, byName: string = true)`](#getserver)
+* [`getServer(name: string`](#getserver)
 * [`getPlugins()`](#getplugins)
-* [`getPlugin(name: string, byName: string = true)`](#getplugin)
+* [`getPlugin(name: string`](#getplugin)
 * [`getIcons()`](#geticons)
-* [`getIcon(name: string, byName: string = true)`](#geticon)
+* [`getIcon(name: string`](#geticon)
 
 ### Session
 See [Session](#session-1)
@@ -43,10 +43,9 @@ See [Session](#session-1)
 
 ### getServer()
 
-| Parameter     | Type          | Default | Description                      |
-|:-------------:|:-------------:|:-------:|:--------------------------------:|
-| `name`        | `string`      |         | The ID or name of the server.    |
-| `byName`      | `boolean`     | `true`  | Whether to search by name or not |
+| Parameter     | Type          | Description                      |
+|:-------------:|:-------------:|:--------------------------------:|
+| `name`        | [string]?      | The ID or name of the server.    |
 
 **Returns:** [Promise]\<[Server](#Server)>
 
@@ -56,11 +55,9 @@ See [Session](#session-1)
 
 ### getPlugin()
 
-| Parameter     | Type          | Default | Description                      |
-|:-------------:|:-------------:|:-------:|:--------------------------------:|
-| `name`        | `string`      |         | The ID or name of the plugin.    |
-| `byName`      | `boolean`     | `true`  | Whether to search by name or not |
-
+| Parameter     | Type          | Description                      |
+|:-------------:|:-------------:|:--------------------------------:|
+| `name`        | [string]?      | The ID or name of the plugin.    |
 **Returns:** [Promise]\<[Plugin](#Plugin)>
 
 ### getIcons()
@@ -69,10 +66,9 @@ See [Session](#session-1)
 
 ### getPlugin()
 
-| Parameter     | Type          | Default | Description                      |
-|:-------------:|:-------------:|:-------:|:--------------------------------:|
-| `name`        | `string`      |         | The ID or name of the icon.      |
-| `byName`      | `boolean`     | `true`  | Whether to search by name or not |
+| Parameter     | Type          | Description                      |
+|:-------------:|:-------------:|:--------------------------------:|
+| `name`        | [string]?      | The ID or name of the icon.      |
 
 **Returns:** [Promise]\<[Icon](#icon)>
 
@@ -96,22 +92,18 @@ The `Server` class represents a Minehut server accessible with no authorization 
 | `creditsPerDay`       | [number]                        |
 | `visibility`          | [boolean]                       |
 | `offer`               | [string]                        |
-| `properties`          | [ServerProperties](#serverproperties)                |
+| `properties`          | [ServerProperties](#serverproperties) |
 | `suspended`           | [boolean]                       |
-| `purchasedIcons`      | [Collection]<[string], [Icon](#icon)>?   |
-| `purchasedIconIds`    | [string][]?                     |
+| `icons`      | [Collection]<[string], [Icon](#icon)>? |
+| `iconIds`    | [string][]?                     |
 | `icon`                | [Icon](#icon)?                  |
 | `iconId`              | [string]?                       |
 | `iconName`            | [string]?                       |
 | `online`              | [boolean]                       |
 | `maxPlayers`          | [number]                        |
 | `playerCount`         | [number]                        |
-| `activePlugins`       | [Collection]<[string], [Plugin](#plugin)>? |
-| `activePluginIds`     | [string][]                      |
-| `purchasedPlugins`    | [Collection]<[string], [Plugin](#plugin)>? |
-| `purchasedPluginIds`  | [string][]                      |
-| `loadedPlugins`       | [Collection]<[string], [Plugin](#plugin)>? |
-| `loadedPluginIds`     | [string][]                      |
+| `plugins`       | [Collection]<[string], [Plugin](#plugin)>? |
+| `pluginIds`     | [string][]                      |
 
 There are also 2 methods: 
 
@@ -172,6 +164,147 @@ new Minehut.Session(credentials: Object { email: string, password: string }, cal
 
 Once successfully logged in, the `callback` function will fire, at which point you should have access to all of the properties belonging to `Session`.
 
+| Property | Type          |
+|:--------:|:-------------:|
+| `user`   | [User](#user) |
+| `id`     | [string]      |
+| `token`  | [string]      |
+
+There's also a `fetch()` method, but I don't recommend using it.
+
+* `fetch(url: string, method?: string, body?: Object<any>)` - Fetches with authorization.
+    * **Returns:** [Promise]\<[Response]>
+
+## User
+
+The `User` class represents a logged in Minehut user.
+
+| Property             | Type                                                     |
+|:--------------------:|:--------------------------------------------------------:|
+| `session`            | [Session](#session-1)                                    |
+| `id`                 | [string]                                                 |
+| `email`              | [string]                                                 |
+| `emailVerified`      | [boolean]                                                |
+| `emailSentAt`        | [number]                                                 |
+| `v`                  | [number]                                                 |
+| `emailCode`          | [string]                                                 |
+| `credits`            | [number]                                                 |
+| `lastLogin`          | [number]                                                 |
+| `lastPasswordChange` | [number]?                                                |
+| `minecraft`          | [Minecraft](#minecraft)?                                 |
+| `maxServers`         | [number]                                                 |
+| `serverIds`          | [string][]                                               |
+| `servers`            | [Collection]<[string], [SessionServer](#sessionserver)>? |
+
+### Minecraft
+
+Object containing information of a user's linked minecraft account.
+
+| Property       | Type     |
+|:--------------:|:--------:|
+| `linkCode`     | [string] |
+| `lastLinkTime` | [number] |
+| `username`     | [string] |
+| `uuid`         | [string] |
+
+## SessionServer
+
+`SessionServer` represents a server belonging to the logged in user. It extends [`Server`](#server) and only has 2 new properties:
+
+| Property  | Type                  |
+|:---------:|:---------------------:|
+| `owner`   | [User](#user)         |
+| `session` | [Session](#session-1) |
+
+It does have a ton of new methods:
+
+### start()
+
+**Description:** Starts the server up.</br>
+**Returns:** [Promise]\<void>
+
+### restart()
+
+**Description:** Restarts the server.</br>
+**Returns:** [Promise]\<void>
+
+### stop()
+
+| Parameter | Type      | Default | Description                         |
+|:---------:|:---------:|:-------:|:-----------------------------------:|
+| `service` | [boolean]? | `true` | Whether to stop the service or not. |
+
+**Description:** Starts the server up.</br>
+**Returns:** [Promise]\<void>
+
+### sendCommand()
+
+| Parameter | Type     | Description             |
+|:---------:|:--------:|:-----------------------:|
+| `command` | [string] | The command to execute. |
+
+**Description:** Sends a command to the server.</br>
+**Returns:** [Promise]\<void>
+
+### editProperties()
+
+| Parameter    | Type                                             | Description             |
+|:------------:|:------------------------------------------------:|:-----------------------:|
+| `properties` | [Partial]<[ServerProperties](#serverproperties)> | The properties to edit. |
+
+**Description:** Edits the server properties.</br>
+**Returns:** [Promise]\<void>
+
+### purchaseIcon()
+
+| Parameter    | Type                      | Description           |
+|:------------:|:-------------------------:|:---------------------:|
+| `identifier` | [string] \| [Icon](#icon) | The icon to purchase. |
+
+**Description:** Purchases an icon.</br>
+**Returns:** [Promise]\<void>
+
+### setIcon()
+
+| Parameter    | Type                                | Description           |
+|:------------:|:-----------------------------------:|:---------------------:|
+| `identifier` | [string] \| [Icon](#icon) \| [null] | The icon to set. Don't specify anything or specify [`null`][null] to set the default icon. |
+
+**Description:** Changes the server's icon.</br>
+**Returns:** [Promise]\<void>
+
+### installPlugin()
+
+| Parameter    | Type                          | Description           |
+|:------------:|:-----------------------------:|:---------------------:|
+| `identifier` | [string] \| [Plugin](#plugin) | The plugin to install |
+
+**Description:** Installs a plugin.</br>
+**Returns:** [Promise]\<void>
+
+### resetPlugin()
+
+| Parameter    | Type                          | Description          |
+|:------------:|:-----------------------------:|:--------------------:|
+| `identifier` | [string] \| [Plugin](#plugin) | The plugin to reset. |
+
+**Description:** Resets plugin data.</br>
+**Returns:** [Promise]\<void>
+
+### uninstallPlugin()
+
+| Parameter    | Type                          | Description             |
+|:------------:|:-----------------------------:|:-----------------------:|
+| `identifier` | [string] \| [Plugin](#plugin) | The plugin to uninstall |
+
+**Description:** Uninstalls a plugin.</br>
+**Returns:** [Promise]\<void>
+
+### refresh()
+
+**Description:** Re-fetches the server properties.<br/>
+**Returns:** [Promise]\<void>
+
 ## ServerProperties
 
 The `ServerProperties` type contains all of the properties that servers can have.
@@ -206,3 +339,6 @@ The `ServerProperties` type contains all of the properties that servers can have
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[Response]: https://developer.mozilla.org/en-US/docs/Web/API/Response
+[Partial]: https://www.typescriptlang.org/docs/handbook/utility-types.html#partialt
+[Null]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Null

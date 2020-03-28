@@ -36,10 +36,10 @@ const Minehut: Minehut = {
         })
         return collection
     },
-    async getServer(name: string, byName: boolean = true) {
-        let server = await fetch(`https://api.minehut.com/server/${name}${byName ? "?byName=true" : ""}`)
+    async getServer(name: string) {
+        let server = await fetch(`https://api.minehut.com/server/${name}${name.length !== 24 ? "?byName=true" : ""}`)
         if (server.status === 502) throw new Error("Server not found.")
-        else if (server.status !== 200) throw new Error(`There was an error while trying to fetch ${name}.`)
+        else if (server.status !== 200) throw new Error(`There was an error.`)
         server = await server.json()
         const returnServer = new Server(server.server)
         return returnServer
@@ -54,14 +54,14 @@ const Minehut: Minehut = {
         })
         return collection
     },
-    async getPlugin(name: string, byName: boolean = true) {
+    async getPlugin(name: string) {
         const plugins = await this.getPlugins()
-        const plugin: Plugin = byName ? plugins.find((p: Plugin) => p.name.toLowerCase() === name.toLowerCase()) : plugins.get(getId(name))
+        const plugin: Plugin = name.length !== 24 ? plugins.find((p: Plugin) => p.name.toLowerCase() === name.toLowerCase()) : plugins.get(getId(name))
         if (!plugin) throw new Error("Plugin not found.")
         return plugin
     },
-    async getIcons() {
-        let icons = await fetch("https://api.minehut.com/servers/icons")
+    async getIcons(available: boolean = false) {
+        let icons = await fetch(`https://api.minehut.com/servers/${available ? "available_icons" : "icons"}`)
         icons = await icons.json()
         const collection: Collection<ID, Icon> = new Collection()
         icons.forEach((icon: {[key: string]: any} | Icon) => {
@@ -70,9 +70,9 @@ const Minehut: Minehut = {
         })
         return collection
     },
-    async getIcon(name: string, byName: boolean = true) {
+    async getIcon(name: string) {
         const icons = await this.getIcons()
-        const icon: Icon = byName ? icons.find((i: Icon) => i.iconName === name) : icons.get(getId(name))
+        const icon: Icon = name.length !== 24 ? icons.find((i: Icon) => i.iconName === name) : icons.get(getId(name))
         if (!icon) throw new Error("Icon not found.")
         return icon
     },
