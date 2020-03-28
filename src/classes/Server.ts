@@ -18,11 +18,11 @@ export class Server implements ServerDictionary {
     v: number
     port: number
     lastOnline: number
-    MOTD: string
+    motd: string
     creditsPerDay: number
     visibility: boolean
     offer: string
-    serverProperties: ServerProperties
+    properties: ServerProperties
     suspended: boolean
     purchasedIcons?: Collection<string, Icon>
     purchasedIconIds?: string[]
@@ -73,7 +73,7 @@ export class Server implements ServerDictionary {
                 for (let i in props) {
                     val[i.replace(/_(.)/g, e => e[1].toUpperCase())] = props[i]
                 }
-                key = "serverProperties"
+                key = "properties"
             }
             else if (key === "metrics") continue
             else key = key.replace(/_(.)/g, e => e[1].toUpperCase())
@@ -158,6 +158,15 @@ export class SessionServer extends Server {
         if (response.status !== 200) throw new Error("There was an error.")
         return
     }
+
+    async restart() {
+        if (!this.online) throw new Error("Server is not online.")
+        const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/restart`, "POST")
+        if (response.status === 403 || response.status === 401) throw new Error("Invalid session.")
+        if (response.status !== 200) throw new Error("There was an error.")
+        return
+    }
+
     async stop(service: boolean = false) {
         if ((!service && this.status === "OFFLINE") || this.status === "SERVICE_OFFLINE") throw new Error("Server is already offline.")
         const url = `https://api.minehut.com/server/${this.id}/${service ? "destroy_service" : "shutdown"}`
@@ -169,9 +178,30 @@ export class SessionServer extends Server {
 
     async sendCommand(command: string) {
         if (!this.online) throw new Error("Server is not online.")
+        if (!command) throw new Error("Command not specified.")
         const response: Response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/send_command`, "POST", {command})
         console.log(response.body)
         if (response.status !== 200) throw new Error(`There was an error while running the command ${command}: ${await response.json()}`)
+        return
+    }
+
+    async editProperties(properties: Partial<ServerProperties>) {
+        if (this.status === "SERVICE_OFFLINE") throw new Error("Service is offline.")
+        const array: Promise<Response>[] = []
+        Object.keys(properties).forEach((prop: string) => {
+            const body = {
+                field: prop.replace(/([A-Z])/g, e => "_" + e.toLowerCase()),
+                value: properties[prop]
+            }
+            array.push(this.session.fetch(`https://api.minehut.com/server/${this.id}/edit_server_properties`, "POST", body))
+        })
+        const responses = await Promise.all(array)
+        if (responses.some(el => el.status === 403 || el.status === 401)) throw new Error("Invalid session.")
+        if (responses.some(el => el.status === 400)) throw new Error("Invalid properties.")
+        if (responses.some(el => el.status !== 200)) throw new Error("There was an error.")
+        Object.keys(properties).forEach((key: string) => {
+            this.properties[key] = properties[key]
+        })
         return
     }
 

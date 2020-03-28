@@ -15,7 +15,7 @@ class Plugin {
             else if (key === "desc_extended")
                 key = "details";
             else
-                key = key.replace(/_(.)/g, e => e[1].toUpperCase());
+                key = key.replace(/_(.)/g, (e) => e[1].toUpperCase());
             this[key] = plugin[i];
         }
     }

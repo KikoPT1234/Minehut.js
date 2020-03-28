@@ -11,18 +11,14 @@ Promise.all([servers, server, icons, icon, plugins, plugin]).then(values => {
     Promise.all([fetchPlugins, fetchIcons]).then(values => {
         const session = new Minehut.Session({
             email: "carricokiko2006@gmail.com",
-            password: "spacescape1234"
-        }, () => {
-            session.user.fetchServers().then(async () => {
-                const server = session.user.servers.first()
-                console.log(server.status)
-                await server.start(true).catch(console.error)
-                setTimeout(async () => {
-                    await server.refresh()
-                    console.log(server.status)
-                    console.log("Test completed successfully")
-                }, 20000)
+            password: "minehut1234"
+        }, async () => {
+            const server = session.user.servers.first()
+            await server.editProperties({
+                forceGamemode: false,
+                viewDistance: 7
             })
+            console.log(server.properties.forceGamemode)
         })
     })
 }).catch(console.error)

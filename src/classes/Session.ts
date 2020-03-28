@@ -23,6 +23,11 @@ export class Session {
             let user = await this.fetch(`https://api.minehut.com/user/${session._id}`)
             user = (await user.json()).user
             this.user = new User(user, this)
+            this.user.servers = new Collection()
+            let servers = await this.fetch(`https://api.minehut.com/servers/${this.user.id}/all_data`)
+            servers = await servers.json()
+            servers = servers.map((server: Server) => new SessionServer(server, this.user, this))
+            servers.forEach((server: SessionServer) => this.user.servers.set(server.id, server))
             onceLogged()
         })
     }

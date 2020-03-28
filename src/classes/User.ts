@@ -50,14 +50,6 @@ export class User implements UserDictionary {
         }
         return
     }
-    async fetchServers() {
-        if (!this.session) throw new Error("Session not found.")
-        this.servers = new Collection()
-        let servers = await this.session.fetch(`https://api.minehut.com/servers/${this.id}/all_data`)
-        servers = await servers.json()
-        servers = servers.map((server: Server) => new SessionServer(server, this, this.session))
-        servers.forEach((server: SessionServer) => this.servers.set(server.id, server))
-    }
 }
 
 function isUser(user: {[key: string]: any}) {
