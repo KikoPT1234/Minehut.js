@@ -1,6 +1,6 @@
 # Minehut.js
 
-# About
+## About
 Minehut.js is a Node module that allows you to interact with the Minehut API.
 
 ## Collections
@@ -8,10 +8,12 @@ The library uses the `Collection` class from Discord.js due to its useful method
 
 ## Documentation
 The `Minehut` object contains some methods and properties:
-`getServers(): Promise<Collection<string, Server>>`
-`getServer(name: string, byName: string = true): Server`
-`getPlugins(): Promise<Collection<string, Plugin>>`
-`getPlugin(name: string, byName: string = true): Plugin`
-`getIcons(): Promise<Collection<string, Icon>>`
-`getIcon(name: string, byName: string = true): Icon`
-`Session: Session`
+<ul>
+<li>`getServers(): Promise<Collection<string, Server>>`</li>
+<li>`getServer(name: string, byName: string = true): Server`</li>
+<li>`getPlugins(): Promise<Collection<string, Plugin>>`</li>
+<li>`getPlugin(name: string, byName: string = true): Plugin`</li>
+<li>`getIcons(): Promise<Collection<string, Icon>>`</li>
+<li>`getIcon(name: string, byName: string = true): Icon`</li>
+<li>`Session: Session`</li>
+</ul>
