@@ -4,6 +4,7 @@
         "watch": true,
         "target": "ES2020",
         "module": "CommonJS",
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "noImplicitAny": true
     }
 }

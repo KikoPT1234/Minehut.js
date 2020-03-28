@@ -1,6 +1,6 @@
 import { UserDictionary } from "../interfaces/UserDictionary";
 import Collection from "@discordjs/collection";
-import { SessionServer } from "./Server";
+import { SessionServer, Server } from "./Server";
 import { Session } from "./Session";
 const fetch = require("node-fetch")
 
@@ -24,7 +24,8 @@ export class User implements UserDictionary {
     maxServers: number
     serverIds: string[]
     servers?: Collection<string, SessionServer>
-    constructor(user, session) {
+    [key: string]: any
+    constructor(user: {[key: string]: any}, session: Session) {
         if (!user) throw new Error("User not specified.")
         if (!isUser(user)) throw new Error("Invalid user.")
         if (session) this.session = session
@@ -54,13 +55,15 @@ export class User implements UserDictionary {
         this.servers = new Collection()
         let servers = await this.session.fetch(`https://api.minehut.com/servers/${this.id}/all_data`)
         servers = await servers.json()
-        servers = servers.map(server => new SessionServer(server))
-        servers.forEach(server => this.servers.set(server.id, server))
+        servers = servers.map((server: Server) => new SessionServer(server, this, this.session))
+        servers.forEach((server: SessionServer) => this.servers.set(server.id, server))
     }
 }
 
-function isUser(user) {
-    const list = {
+function isUser(user: {[key: string]: any}) {
+    const list: {
+        [key: string]: any
+    } = {
         "_id": "string",
         "email": "string",
         "email_verified": "boolean",

@@ -15,12 +15,12 @@ function getId(id: string): ID {
 
 interface Minehut {
     getServers(): Promise<Collection<ID, Server>>
-    getServer(name: string, byName?: boolean): Promise<Server>
+    getServer(name: string, byName: boolean): Promise<Server>
     getPlugins(): Promise<Collection<ID, Plugin>>
-    getPlugin(name: string, byName?: boolean): Promise<Plugin>
+    getPlugin(name: string, byName: boolean): Promise<Plugin>
     getIcons(): Promise<Collection<ID, Icon>>
-    getIcon(name: string, byName?: boolean): Promise<Icon>
-    getPlayerCount(separated?: boolean): Promise<number | {lobbies: number, servers: number}>
+    getIcon(name: string, byName: boolean): Promise<Icon>
+    getPlayerCount(separated: boolean): Promise<number | {lobbies: number, servers: number}>
 
     Session: Function
 }
@@ -30,9 +30,9 @@ const Minehut: Minehut = {
         let servers = await fetch("https://api.minehut.com/servers")
         servers = await servers.json()
         const collection: Collection<ID, Server> = new Collection()
-        servers.servers.forEach(server => {
+        servers.servers.forEach((server: MHServerObj | Server) => {
             server = new Server(server)
-            collection.set(getId(server.id), server)
+            collection.set(getId(server.id), server as Server)
         })
         return collection
     },
@@ -48,15 +48,15 @@ const Minehut: Minehut = {
         let plugins = await fetch("https://api.minehut.com/plugins_public")
         plugins = (await plugins.json()).all
         const collection: Collection<ID, Plugin> = new Collection()
-        plugins.forEach(plugin => {
+        plugins.forEach((plugin: {[key: string]: any} | Plugin) => {
             plugin = new Plugin(plugin)
-            collection.set(getId(plugin.id), plugin)
+            collection.set(getId(plugin.id), plugin as Plugin)
         })
         return collection
     },
     async getPlugin(name: string, byName: boolean = true) {
         const plugins = await this.getPlugins()
-        const plugin: Plugin = byName ? plugins.find(p => p.name.toLowerCase() === name.toLowerCase()) : plugins.get(getId(name))
+        const plugin: Plugin = byName ? plugins.find((p: Plugin) => p.name.toLowerCase() === name.toLowerCase()) : plugins.get(getId(name))
         if (!plugin) throw new Error("Plugin not found.")
         return plugin
     },
@@ -64,15 +64,15 @@ const Minehut: Minehut = {
         let icons = await fetch("https://api.minehut.com/servers/icons")
         icons = await icons.json()
         const collection: Collection<ID, Icon> = new Collection()
-        icons.forEach(icon => {
+        icons.forEach((icon: {[key: string]: any} | Icon) => {
             icon = new Icon(icon)
-            collection.set(getId(icon.id), icon)
+            collection.set(getId(icon.id), icon as Icon)
         })
         return collection
     },
     async getIcon(name: string, byName: boolean = true) {
         const icons = await this.getIcons()
-        const icon: Icon = byName ? icons.find(i => i.iconName === name) : icons.get(getId(name))
+        const icon: Icon = byName ? icons.find((i: Icon) => i.iconName === name) : icons.get(getId(name))
         if (!icon) throw new Error("Icon not found.")
         return icon
     },

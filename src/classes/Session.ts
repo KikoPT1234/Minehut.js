@@ -15,7 +15,7 @@ export class Session {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(credentials)
-        }).then(async session => {
+        }).then(async (session: {[key: string]: any}) => {
             if (session.status === 401) throw new Error("Invalid email and/or password.")
             session = await session.json()
             this.id = session.sessionId
@@ -26,16 +26,19 @@ export class Session {
             onceLogged()
         })
     }
-    async fetch(url: string, method?: string) {
+    async fetch(url: string, method?: string, body?: Object) {
         if (!(this.id && this.token)) throw new Error("Credentials not found.")
-        const response = await fetch(url, {
+        const settings: {[key: string]: any} = {
             method: method || "GET",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": this.token,
                 "X-Session-Id": this.id
-            }
-        })
+            },
+            body: undefined
+        }
+        if (body) settings.body = JSON.stringify(body)
+        const response = await fetch(url, settings)
         return response
     }
 }

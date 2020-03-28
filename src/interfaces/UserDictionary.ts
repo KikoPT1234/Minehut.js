@@ -3,6 +3,7 @@ import Collection from "@discordjs/collection";
 import { Session } from "../classes/Session";
 
 export interface UserDictionary {
+    [key: string]: any
     session: Session
     id: string
     email: string

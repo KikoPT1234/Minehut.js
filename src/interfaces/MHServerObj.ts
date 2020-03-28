@@ -1,5 +1,6 @@
 
 export interface MHServerObj {
+    [key: string]: any
     id: string
     owner: string
     name: string

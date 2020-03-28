@@ -24,17 +24,21 @@ class Session {
             onceLogged();
         });
     }
-    async fetch(url, method) {
+    async fetch(url, method, body) {
         if (!(this.id && this.token))
             throw new Error("Credentials not found.");
-        const response = await fetch(url, {
+        const settings = {
             method: method || "GET",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": this.token,
                 "X-Session-Id": this.id
-            }
-        });
+            },
+            body: undefined
+        };
+        if (body)
+            settings.body = JSON.stringify(body);
+        const response = await fetch(url, settings);
         return response;
     }
 }

@@ -42,8 +42,8 @@ class User {
         this.servers = new collection_1.default();
         let servers = await this.session.fetch(`https://api.minehut.com/servers/${this.id}/all_data`);
         servers = await servers.json();
-        servers = servers.map(server => new Server_1.SessionServer(server));
-        servers.forEach(server => this.servers.set(server.id, server));
+        servers = servers.map((server) => new Server_1.SessionServer(server, this, this.session));
+        servers.forEach((server) => this.servers.set(server.id, server));
     }
 }
 exports.User = User;

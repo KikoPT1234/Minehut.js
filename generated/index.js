@@ -15,7 +15,7 @@ const Minehut = {
         let servers = await fetch("https://api.minehut.com/servers");
         servers = await servers.json();
         const collection = new collection_1.default();
-        servers.servers.forEach(server => {
+        servers.servers.forEach((server) => {
             server = new Server_1.Server(server);
             collection.set(getId(server.id), server);
         });
@@ -35,7 +35,7 @@ const Minehut = {
         let plugins = await fetch("https://api.minehut.com/plugins_public");
         plugins = (await plugins.json()).all;
         const collection = new collection_1.default();
-        plugins.forEach(plugin => {
+        plugins.forEach((plugin) => {
             plugin = new Plugin_1.Plugin(plugin);
             collection.set(getId(plugin.id), plugin);
         });
@@ -43,7 +43,7 @@ const Minehut = {
     },
     async getPlugin(name, byName = true) {
         const plugins = await this.getPlugins();
-        const plugin = byName ? plugins.find(p => p.name.toLowerCase() === name.toLowerCase()) : plugins.get(getId(name));
+        const plugin = byName ? plugins.find((p) => p.name.toLowerCase() === name.toLowerCase()) : plugins.get(getId(name));
         if (!plugin)
             throw new Error("Plugin not found.");
         return plugin;
@@ -52,7 +52,7 @@ const Minehut = {
         let icons = await fetch("https://api.minehut.com/servers/icons");
         icons = await icons.json();
         const collection = new collection_1.default();
-        icons.forEach(icon => {
+        icons.forEach((icon) => {
             icon = new Icon_1.Icon(icon);
             collection.set(getId(icon.id), icon);
         });
@@ -60,7 +60,7 @@ const Minehut = {
     },
     async getIcon(name, byName = true) {
         const icons = await this.getIcons();
-        const icon = byName ? icons.find(i => i.iconName === name) : icons.get(getId(name));
+        const icon = byName ? icons.find((i) => i.iconName === name) : icons.get(getId(name));
         if (!icon)
             throw new Error("Icon not found.");
         return icon;

@@ -2,9 +2,10 @@ import {Icon} from "../classes/Icon"
 import ServerProperties from "./ServerProperties"
 import Collection from "@discordjs/collection"
 import {Plugin} from "../classes/Plugin"
+import { User } from "../classes/User"
 export default interface ServerDictionary {
     id: string
-    owner: string
+    ownerId: string
     name: string
     nameLower: string
     creation: number
