@@ -4,47 +4,62 @@
 Minehut.js is a Node module that allows you to interact with the Minehut API.
 
 ## Collections
-The library uses the `Collection` class from Discord.js due to its useful methods such as `find()`, `filter()` and `first()`. For more information, check the [Discord.js Documentation](https://discord.js.org/#/docs/collection/master/class/Collection).
+The library uses the `Collection` class from Discord.js due to its useful methods such as `find()`, `filter()` and `first()`. For more information, check the [Discord.js Documentation](Collection).
 
 ## Documentation
 The `Minehut` object contains some methods and properties:
 
+* [`Session`](#session)
 * [`getServers()`](#getservers)
-* `getServer(name: string, byName: string = true)`
-* `getPlugins()`
-* `getPlugin(name: string, byName: string = true)`
-* `getIcons()`
-* `getIcon(name: string, byName: string = true)`
-* `Session`
+* [`getServer(name: string, byName: string = true)`](#getserver)
+* [`getPlugins()`](#getplugins)
+* [`getPlugin(name: string, byName: string = true)`](#getplugin)
+* [`getIcons()`](#geticons)
+* [`getIcon(name: string, byName: string = true)`](#geticon)
+
+### Session
+
+**Type:** `Session`
 
 ### getServers()
 
-**Returns:** `Promise<Collection<string, Server>>`
+**Returns:** [`Promise`](Promise)<[`Collection`](Collection)<[`string`](String), `Server`>>`
 
 ### getServer()
 
-**Parameters:**
-
-* `name` - The name or id of the server
-    * Type: `string`
-* `byName` - Set to `false` to search by id, set to `true` to search by name. 
-    * Type: `boolean`
-    * Default: `true`
+| Parameter     | Type          | Default | Description                      |
+| ------------- |---------------|--------:|----------------------------------|
+| `name`        | `string`      |         | The ID or name of the server.    |
+| `byName`      | `boolean`     | `true`  | Whether to search by name or not |
 
 **Returns:** `Promise<Collection<string, Server>>`
 
-### getServers()
+### getPlugins()
 
-**Returns:** `Promise<Collection<string, Server>>`
+**Returns:** `Promise<Collection<string, Plugin>>`
 
-### getServers()
+### getPlugin()
 
-**Returns:** `Promise<Collection<string, Server>>`
+| Parameter     | Type          | Default | Description                      |
+| ------------- |---------------|--------:|----------------------------------|
+| `name`        | `string`      |         | The ID or name of the plugin.    |
+| `byName`      | `boolean`     | `true`  | Whether to search by name or not |
 
-### getServers()
+**Returns:** `Promise<Plugin>`
 
-**Returns:** `Promise<Collection<string, Server>>`
+### getIcons()
 
-### getServers()
+**Returns:** `Promise<Collection<string, Icon>>`
 
-**Returns:** `Promise<Collection<string, Server>>`
+### getPlugin()
+
+| Parameter     | Type          | Default | Description                      |
+| ------------- |---------------|--------:|----------------------------------|
+| `name`        | `string`      |         | The ID or name of the icon.      |
+| `byName`      | `boolean`     | `true`  | Whether to search by name or not |
+
+**Returns:** `Promise<Icon>`
+
+[Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[Collection]: https://discord.js.org/#/docs/collection/master/class/Collection
+[String]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
