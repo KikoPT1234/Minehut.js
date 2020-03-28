@@ -23,7 +23,7 @@ The `Minehut` object contains some methods and properties:
 
 ### getServers()
 
-**Returns:** [`Promise`](Promise)<[`Collection`](Collection)<[`string`](String), `Server`>>`
+**Returns:** [Promise](Promise)<[Collection](Collection)<[string](String), Server>>
 
 ### getServer()
 
