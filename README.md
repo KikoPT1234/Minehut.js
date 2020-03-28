@@ -8,10 +8,10 @@ The library uses the `Collection` class from Discord.js due to its useful method
 
 ## Documentation
 The `Minehut` object contains some methods and properties:
-..* `getServers(): Promise<Collection<string, Server>>`
-..* `getServer(name: string, byName: string = true): Server`
-..* `getPlugins(): Promise<Collection<string, Plugin>>`
-..* `getPlugin(name: string, byName: string = true): Plugin`
-..* `getIcons(): Promise<Collection<string, Icon>>`
-..* `getIcon(name: string, byName: string = true): Icon`
-..* `Session: Session`
+⋅⋅* `getServers(): Promise<Collection<string, Server>>`
+⋅⋅* `getServer(name: string, byName: string = true): Server`
+⋅⋅* `getPlugins(): Promise<Collection<string, Plugin>>`
+⋅⋅* `getPlugin(name: string, byName: string = true): Plugin`
+⋅⋅* `getIcons(): Promise<Collection<string, Icon>>`
+⋅⋅* `getIcon(name: string, byName: string = true): Icon`
+⋅⋅* `Session: Session`
