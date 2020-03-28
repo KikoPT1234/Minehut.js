@@ -9,11 +9,11 @@ The library uses the `Collection` class from Discord.js due to its useful method
 ## Documentation
 The `Minehut` object contains some methods and properties:
 <ul>
-<li>`getServers(): Promise<Collection<string, Server>>`</li>
-<li>`getServer(name: string, byName: string = true): Server`</li>
-<li>`getPlugins(): Promise<Collection<string, Plugin>>`</li>
-<li>`getPlugin(name: string, byName: string = true): Plugin`</li>
-<li>`getIcons(): Promise<Collection<string, Icon>>`</li>
-<li>`getIcon(name: string, byName: string = true): Icon`</li>
-<li>`Session: Session`</li>
+<li><code>getServers(): Promise<Collection<string, Server>></code></li>
+<li><code>getServer(name: string, byName: string = true): Server</code></li>
+<li><code>getPlugins(): Promise<Collection<string, Plugin>></code></li>
+<li><code>getPlugin(name: string, byName: string = true): Plugin</code></li>
+<li><code>getIcons(): Promise<Collection<string, Icon>></code></li>
+<li><code>getIcon(name: string, byName: string = true): Icon</code></li>
+<li><code>Session: Session</code></li>
 </ul>
