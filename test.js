@@ -11,7 +11,7 @@ Promise.all([servers, server, icons, icon, plugins, plugin]).then(values => {
     Promise.all([fetchPlugins, fetchIcons]).then(values => {
         const session = new Minehut.Session({
             email: "carricokiko2006@gmail.com",
-            password: "minehut1234"
+            password: "spacescape1234"
         }, async () => {
             const server = session.user.servers.first()
             await server.editProperties({
@@ -20,5 +20,6 @@ Promise.all([servers, server, icons, icon, plugins, plugin]).then(values => {
             })
             console.log(server.properties.forceGamemode)
         })
+
     })
 }).catch(console.error)
