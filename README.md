@@ -1,5 +1,8 @@
 # Minehut.js
 
+## IMPORTANT
+This library is still heavily under development, so don't expect much at the moment!
+
 ## About
 Minehut.js is a Node module that allows you to interact with the Minehut API.
 
