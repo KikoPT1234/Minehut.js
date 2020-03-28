@@ -43,7 +43,7 @@ const Minehut = {
     },
     async getPlugin(name, byName = true) {
         const plugins = await this.getPlugins();
-        const plugin = byName ? plugins.find(p => p.name === name) : plugins.get(this.getID(name));
+        const plugin = byName ? plugins.find(p => p.name.toLowerCase() === name.toLowerCase()) : plugins.get(getId(name));
         if (!plugin)
             throw new Error("Plugin not found.");
         return plugin;
@@ -60,9 +60,9 @@ const Minehut = {
     },
     async getIcon(name, byName = true) {
         const icons = await this.getIcons();
-        const icon = byName ? icons.find(i => i.name === name) : icons.get(this.getID(name));
+        const icon = byName ? icons.find(i => i.iconName === name) : icons.get(getId(name));
         if (!icon)
-            throw new Error("Plugin not found.");
+            throw new Error("Icon not found.");
         return icon;
     },
     async getPlayerCount(separated = false) {

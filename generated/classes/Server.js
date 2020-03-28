@@ -4,7 +4,7 @@ class Server {
     constructor(server) {
         if (!server)
             throw new Error("Server not specified");
-        if (!isServer(server))
+        if (!(server instanceof Server) && !isServer(server))
             throw new Error("Invalid Server.");
         for (let i in server) {
             let key = i;
@@ -41,6 +41,8 @@ class Server {
                 }
                 key = "serverProperties";
             }
+            else if (key === "metrics")
+                continue;
             else
                 key = key.replace(/_(.)/g, e => e[1].toUpperCase());
             this[key] = val;
@@ -106,3 +108,9 @@ function isServer(server) {
         return true;
     }
 }
+class SessionServer extends Server {
+    constructor(server) {
+        super(server);
+    }
+}
+exports.SessionServer = SessionServer;

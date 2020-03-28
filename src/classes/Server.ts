@@ -1,4 +1,4 @@
-import MHServerObj from "../interfaces/MHServerObj"
+import {MHServerObj} from "../interfaces/MHServerObj"
 import ServerDictionary from "../interfaces/ServerDictionary"
 import {Icon} from "./Icon"
 import Collection from "@discordjs/collection"
@@ -36,9 +36,9 @@ export class Server implements ServerDictionary {
     purchasedPluginIds: string[]
     loadedPlugins?: Collection<string, Plugin>
     loadedPluginIds: string[]
-    constructor(server: MHServerObj) {
+    constructor(server: MHServerObj | Server) {
         if (!server) throw new Error("Server not specified")
-        if (!isServer(server)) throw new Error("Invalid Server.")
+        if (!(server instanceof Server) && !isServer(server)) throw new Error("Invalid Server.")
         for (let i in server) {
             let key: any = i
             let val: any = server[i]
@@ -71,6 +71,7 @@ export class Server implements ServerDictionary {
                 }
                 key = "serverProperties"
             }
+            else if (key === "metrics") continue
             else key = key.replace(/_(.)/g, e => e[1].toUpperCase())
             this[key] = val
         }
@@ -125,5 +126,11 @@ function isServer(server) {
         }
         else if (typeof server[i] !== list[i]) return false
         return true
+    }
+}
+
+export class SessionServer extends Server {
+    constructor(server: Server) {
+        super(server)
     }
 }

@@ -4,7 +4,7 @@ import {Server} from "./classes/Server"
 import {Session} from "./classes/Session"
 import {Icon} from "./classes/Icon"
 import {Plugin} from "./classes/Plugin"
-import MHServerObj from "./interfaces/MHServerObj"
+import {MHServerObj} from "./interfaces/MHServerObj"
 import { getServers } from "dns"
 type ID = string
 
@@ -22,7 +22,7 @@ interface Minehut {
     getIcon(name: string, byName?: boolean): Promise<Icon>
     getPlayerCount(separated?: boolean): Promise<number | {lobbies: number, servers: number}>
 
-    Session: Session
+    Session: Function
 }
 
 const Minehut: Minehut = {
@@ -56,7 +56,7 @@ const Minehut: Minehut = {
     },
     async getPlugin(name: string, byName: boolean = true) {
         const plugins = await this.getPlugins()
-        const plugin: Plugin = byName ? plugins.find(p => p.name === name) : plugins.get(this.getID(name))
+        const plugin: Plugin = byName ? plugins.find(p => p.name.toLowerCase() === name.toLowerCase()) : plugins.get(getId(name))
         if (!plugin) throw new Error("Plugin not found.")
         return plugin
     },
@@ -72,8 +72,8 @@ const Minehut: Minehut = {
     },
     async getIcon(name: string, byName: boolean = true) {
         const icons = await this.getIcons()
-        const icon: Icon = byName ? icons.find(i => i.name === name) : icons.get(this.getID(name))
-        if (!icon) throw new Error("Plugin not found.")
+        const icon: Icon = byName ? icons.find(i => i.iconName === name) : icons.get(getId(name))
+        if (!icon) throw new Error("Icon not found.")
         return icon
     },
     async getPlayerCount(separated: boolean = false) {

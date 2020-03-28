@@ -1,5 +1,5 @@
 
-export default interface MHServerObj {
+export interface MHServerObj {
     id: string
     owner: string
     name: string
