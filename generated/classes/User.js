@@ -1,7 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const collection_1 = require("@discordjs/collection");
-const Server_1 = require("./Server");
 const fetch = require("node-fetch");
 class User {
     constructor(user, session) {
@@ -35,15 +33,6 @@ class User {
             this[key] = val;
         }
         return;
-    }
-    async fetchServers() {
-        if (!this.session)
-            throw new Error("Session not found.");
-        this.servers = new collection_1.default();
-        let servers = await this.session.fetch(`https://api.minehut.com/servers/${this.id}/all_data`);
-        servers = await servers.json();
-        servers = servers.map((server) => new Server_1.SessionServer(server, this, this.session));
-        servers.forEach((server) => this.servers.set(server.id, server));
     }
 }
 exports.User = User;

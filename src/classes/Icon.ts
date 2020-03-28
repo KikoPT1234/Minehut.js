@@ -10,13 +10,14 @@ export class Icon implements IconDictionary {
     disabled: boolean
     created: number
     lastUpdated: number
-    constructor(icon) {
+    [key: string]: any
+    constructor(icon: {[key: string]: any}) {
         if (!icon) throw new Error("Icon not specified")
         for (let i in icon) {
             let key: any = i
             if (key === "_id") key = "id"
             else if (key === "__v") key = "v"
-            else key = key.replace(/_(.)/g, e => e[1].toUpperCase())
+            else key = key.replace(/_(.)/g, (e: string) => e[1].toUpperCase())
             this[key] = icon[i]
         }
     }

@@ -20,4 +20,5 @@ export default interface ServerProperties {
     gamemode: number
     maxPlayers: number
     spawnProtection: number
+    [key: string]: any
 }

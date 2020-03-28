@@ -11,7 +11,7 @@ class Icon {
             else if (key === "__v")
                 key = "v";
             else
-                key = key.replace(/_(.)/g, e => e[1].toUpperCase());
+                key = key.replace(/_(.)/g, (e) => e[1].toUpperCase());
             this[key] = icon[i];
         }
     }

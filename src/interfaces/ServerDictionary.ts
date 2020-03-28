@@ -14,11 +14,11 @@ export default interface ServerDictionary {
     v: number
     port: number
     lastOnline: number
-    MOTD: string
+    motd: string
     creditsPerDay: number
     visibility: boolean
     offer: string
-    serverProperties: ServerProperties
+    properties: ServerProperties
     suspended: boolean
     purchasedIcons?: Collection<string, Icon>
     purchasedIconIds?: string[]

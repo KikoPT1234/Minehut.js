@@ -14,7 +14,8 @@ export class Plugin implements PluginDictionary {
     v: number
     created: number
     lastUpdated: number
-    constructor(plugin) {
+    [key: string]: any
+    constructor(plugin: {[key: string]: any}) {
         if (!plugin) throw new Error("Plugin not specified")
         for (let i in plugin) {
             let key: any = i
@@ -22,7 +23,7 @@ export class Plugin implements PluginDictionary {
             else if (key === "__v") key = "v"
             else if (key === "desc") key = "description"
             else if (key === "desc_extended") key = "details"
-            else key = key.replace(/_(.)/g, e => e[1].toUpperCase())
+            else key = key.replace(/_(.)/g, (e: string) => e[1].toUpperCase())
             this[key] = plugin[i]
         }
     }
