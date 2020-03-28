@@ -15,3 +15,7 @@ The `Minehut` object contains some methods and properties:
 ..* `getIcons(): Promise<Collection<string, Icon>>`
 ..* `getIcon(name: string, byName: string = true): Icon`
 ..* `Session: Session`
+
+### `getServers()`
+
+**Returns:** Promise<Collection<string, Server>>
