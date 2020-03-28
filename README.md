@@ -28,7 +28,7 @@ The `Minehut` object contains some methods and properties:
 ### getServer()
 
 | Parameter     | Type          | Default | Description                      |
-| ------------- |---------------|--------:|----------------------------------|
+|:-------------:|:-------------:|:-------:|:--------------------------------:|
 | `name`        | `string`      |         | The ID or name of the server.    |
 | `byName`      | `boolean`     | `true`  | Whether to search by name or not |
 
@@ -41,7 +41,7 @@ The `Minehut` object contains some methods and properties:
 ### getPlugin()
 
 | Parameter     | Type          | Default | Description                      |
-| ------------- |---------------|--------:|----------------------------------|
+|:-------------:|:-------------:|:-------:|:--------------------------------:|
 | `name`        | `string`      |         | The ID or name of the plugin.    |
 | `byName`      | `boolean`     | `true`  | Whether to search by name or not |
 
@@ -54,7 +54,7 @@ The `Minehut` object contains some methods and properties:
 ### getPlugin()
 
 | Parameter     | Type          | Default | Description                      |
-| ------------- |---------------|--------:|----------------------------------|
+|:-------------:|:-------------:|:-------:|:--------------------------------:|
 | `name`        | `string`      |         | The ID or name of the icon.      |
 | `byName`      | `boolean`     | `true`  | Whether to search by name or not |
 
