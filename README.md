@@ -11,7 +11,7 @@ The library uses the `Collection` class from Discord.js due to its useful method
 ## Documentation
 The `Minehut` object contains some methods and properties:
 
-..* [`getServers(): Promise<Collection<string, Server>>`](#getservers)
+..* `getServers(): Promise<Collection<string, Server>>`
 
 ..* `getServer(name: string, byName: string = true): Server`
 
