@@ -12,9 +12,16 @@ Promise.all([servers, server, icons, icon, plugins, plugin]).then(values => {
         const session = new Minehut.Session({
             email: "carricokiko2006@gmail.com",
             password: "spacescape1234"
-        }, async () => {
-            session.user.fetchServers().then(() => {
-                console.log("Successful.")
+        }, () => {
+            session.user.fetchServers().then(async () => {
+                const server = session.user.servers.first()
+                console.log(server.status)
+                await server.start(true).catch(console.error)
+                setTimeout(async () => {
+                    await server.refresh()
+                    console.log(server.status)
+                    console.log("Test completed successfully")
+                }, 20000)
             })
         })
     })
