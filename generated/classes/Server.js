@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const Icon_1 = require("./Icon");
+const Plugin_1 = require("./Plugin");
 class Server {
     constructor(server) {
+        this.pluginIds = [];
         if (!server)
             throw new Error("Server not specified");
         if (!(server instanceof Server) && !isServer(server))
@@ -22,18 +25,20 @@ class Server {
                 key = "iconName";
             }
             else if (key === "purchased_icons" && server[i]) {
-                key = "purchasedIconIds";
+                key = "iconIds";
             }
             else if (key === "__v")
                 key = "v";
             else if (key === "purchased_plugins") {
-                key = "purchasedPluginIds";
+                this.pluginIds.push(...val);
+                continue;
             }
             else if (key === "active_plugins") {
-                key = "activePluginIds";
+                this.pluginIds.push(...val);
+                continue;
             }
             else if (key === "plugins_loaded") {
-                key = "loadedPluginIds";
+                continue;
             }
             else if (key === "server_properties") {
                 const props = server[i];
@@ -53,17 +58,21 @@ class Server {
     }
     async fetchPlugins() {
         const Minehut = require("../index");
+        if (this.plugins)
+            throw new Error("Plugins are already fetched.");
         const plugins = await Minehut.getPlugins();
-        if (this.activePluginIds)
-            this.activePlugins = plugins.filter((p) => this.activePluginIds.includes(p.id));
+        if (this.pluginIds)
+            this.plugins = plugins.filter((p) => this.pluginIds.includes(p.id));
     }
     async fetchIcons() {
         const Minehut = require("../index");
+        if (this.icons)
+            throw new Error("Icons are already fetched.");
         const icons = await Minehut.getIcons();
-        if (!this.purchasedIconIds || (this.purchasedIconIds.length === 0 && !this.iconName && !this.iconId))
+        if (!this.iconIds || (this.iconIds.length === 0 && !this.iconName && !this.iconId))
             throw new Error("No icon found.");
-        if (this.purchasedIconIds)
-            this.purchasedIcons = icons.filter((i) => this.purchasedIconIds.includes(i.id));
+        if (this.iconIds)
+            this.icons = icons.filter((i) => this.iconIds.includes(i.id));
         if (this.iconName)
             this.icon = icons.find((i) => i.iconName.toLowerCase() === this.iconName.toLowerCase());
         else if (this.iconId)
@@ -190,6 +199,141 @@ class SessionServer extends Server {
         });
         return;
     }
+    async purchaseIcon(identifier) {
+        const Minehut = require("../index");
+        let id = "";
+        if (typeof identifier === "string" && identifier.length !== 24) {
+            id = (await Minehut.getIcon(identifier)).id;
+        }
+        else if (identifier instanceof Icon_1.Icon)
+            id = identifier.id;
+        else
+            id = identifier;
+        if (this.iconIds.includes(id))
+            throw new Error("Icon is already owned.");
+        const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/icon/purchase`, "POST", {
+            icon_id: id
+        });
+        if (response.status === 401)
+            throw new Error("Not enough credits.");
+        if (!response.status.toString().startsWith("2"))
+            throw new Error("There was an error.");
+        const icon = await Minehut.getIcon(id);
+        this.iconIds.push(id);
+        this.icons.set(id, icon);
+        return;
+    }
+    async setIcon(identifier) {
+        const Minehut = require("../index");
+        let id = "";
+        if (!identifier)
+            id = null;
+        else if (typeof identifier === "string" && identifier.length !== 24) {
+            id = (await Minehut.getIcon(identifier)).id;
+        }
+        else if (identifier instanceof Icon_1.Icon)
+            id = identifier.id;
+        else
+            id = identifier;
+        const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/icon/equip`, "POST", id ? {
+            icon_id: id
+        } : {});
+        if (response.status === 409)
+            throw new Error("Server does not own that icon.");
+        if (response.status === 500)
+            throw new Error("Icon not found.");
+        if (id === null)
+            this.iconName, this.iconId, this.icon = null;
+        else {
+            const icon = await Minehut.getIcon(id);
+            this.icon = icon;
+            this.iconId = icon.id;
+            this.iconName = icon.iconName;
+        }
+        return;
+    }
+    async installPlugin(identifier) {
+        if (this.status === "SERVICE_OFFLINE")
+            throw new Error("Service is offline.");
+        const Minehut = require("../index");
+        let id = "";
+        if (!identifier)
+            id = null;
+        else if (typeof identifier === "string" && identifier.length !== 24) {
+            id = (await Minehut.getPlugin(identifier)).id;
+        }
+        else if (identifier instanceof Plugin_1.Plugin)
+            id = identifier.id;
+        else
+            id = identifier;
+        if (this.pluginIds.includes(id))
+            throw new Error("Plugin is already installed.");
+        const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/install_plugin`, "POST", {
+            plugin: id
+        });
+        if (response.status === 400)
+            throw new Error("Plugin not found.");
+        if (response.status !== 200)
+            throw new Error("There was an error.");
+        const plugin = await Minehut.getPlugin(id);
+        this.pluginIds.push(id);
+        if (this.plugins && this.plugins.size > 0)
+            this.plugins.set(id, plugin);
+        return;
+    }
+    async resetPlugin(identifier) {
+        if (this.status === "SERVICE_OFFLINE")
+            throw new Error("Service is offline.");
+        const Minehut = require("../index");
+        let id = "";
+        if (!identifier)
+            id = null;
+        else if (typeof identifier === "string" && identifier.length !== 24) {
+            id = (await Minehut.getPlugin(identifier)).id;
+        }
+        else if (identifier instanceof Plugin_1.Plugin)
+            id = identifier.id;
+        else
+            id = identifier;
+        if (!this.pluginIds.includes(id))
+            throw new Error("Plugin is not installed.");
+        const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/remove_plugin_data`, "POST", {
+            plugin: id
+        });
+        if (response.status === 400)
+            throw new Error("Plugin not found.");
+        if (response.status !== 200)
+            throw new Error("There was an error.");
+        return;
+    }
+    async uninstallPlugin(identifier) {
+        if (this.status === "SERVICE_OFFLINE")
+            throw new Error("Service is offline.");
+        const Minehut = require("../index");
+        let id = "";
+        if (!identifier)
+            id = null;
+        else if (typeof identifier === "string" && identifier.length !== 24) {
+            id = (await Minehut.getPlugin(identifier)).id;
+        }
+        else if (identifier instanceof Plugin_1.Plugin)
+            id = identifier.id;
+        else
+            id = identifier;
+        if (!this.pluginIds.includes(id))
+            throw new Error("Plugin is already not installed.");
+        const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/remove_plugin`, "POST", {
+            plugin: id
+        });
+        if (response.status === 400)
+            throw new Error("Plugin not found.");
+        if (response.status !== 200)
+            throw new Error("There was an error.");
+        delete this.pluginIds[this.pluginIds.indexOf(id)];
+        if (this.plugins && this.plugins.size > 0)
+            this.plugins.delete(id);
+        return;
+    }
     async refresh() {
         const response = await this.session.fetch(`https://api.minehut.com/servers/${this.owner.id}/all_data`);
         if (response.status === 403 || response.status === 401)
@@ -214,7 +358,7 @@ class SessionServer extends Server {
                 key = "iconName";
             }
             else if (key === "purchased_icons" && server[i]) {
-                key = "purchasedIconIds";
+                key = "iconIds";
             }
             else if (key === "__v")
                 this.v = server[i];
@@ -222,7 +366,7 @@ class SessionServer extends Server {
                 key = "purchasedPluginIds";
             }
             else if (key === "active_plugins") {
-                key = "activePluginIds";
+                key = "pluginIds";
             }
             else if (key === "plugins_loaded") {
                 key = "loadedPluginIds";
@@ -241,6 +385,7 @@ class SessionServer extends Server {
                 key = key.replace(/_(.)/g, (e) => e[1].toUpperCase());
             this[key] = val;
         }
+        await Promise.all([this.fetchIcons(), this.fetchPlugins()]);
         return;
     }
 }

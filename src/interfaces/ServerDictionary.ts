@@ -20,20 +20,16 @@ export default interface ServerDictionary {
     offer: string
     properties: ServerProperties
     suspended: boolean
-    purchasedIcons?: Collection<string, Icon>
-    purchasedIconIds?: string[]
+    icons?: Collection<string, Icon>
+    iconIds?: string[]
     icon?: Icon
     iconId?: string
     iconName?: string
     online: boolean
     maxPlayers: number
     playerCount: number
-    activePlugins?: Collection<string, Plugin>
-    activePluginIds: string[]
-    purchasedPlugins?: Collection<string, Plugin>
-    purchasedPluginIds: string[]
-    loadedPlugins?: Collection<string, Plugin>
-    loadedPluginIds: string[]
+    plugins?: Collection<string, Plugin>
+    pluginIds: string[]
     fetchPlugins(): Promise<void>
     fetchIcons(): Promise<void>
 }
