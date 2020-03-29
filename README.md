@@ -7,7 +7,7 @@ This library is still heavily under development, so don't expect much at the mom
 Minehut.js is a TypeScript and JavaScript library that allows you to interact with the Minehut API.
 
 ## Collections
-The library uses the `Collection` class from Discord.js due to its useful methods such as `find()`, `filter()` and `first()`. For more information, check the [Discord.js Documentation][Collection].
+The library uses the `Collection` class from Discord.js due to its useful methods such as `.find()`, `.filter()` and `.first()`. For more information, check the [Discord.js Documentation][Collection].
 
 ## Example
 
@@ -37,11 +37,11 @@ The `Minehut` object contains some methods and properties:
 ### Session
 See [Session](#session-1)
 
-### getServers()
+### .getServers()
 
 **Returns:** [Promise]<[Collection]<[string], [Server](#server)>>
 
-### getServer()
+### .getServer()
 
 | Parameter     | Type          | Description                      |
 |:-------------:|:-------------:|:--------------------------------:|
@@ -49,22 +49,22 @@ See [Session](#session-1)
 
 **Returns:** [Promise]\<[Server](#Server)>
 
-### getPlugins()
+### .getPlugins()
 
 **Returns:** [Promise]<[Collection]<[string], [Plugin](#Plugin)>>
 
-### getPlugin()
+### .getPlugin()
 
 | Parameter     | Type          | Description                      |
 |:-------------:|:-------------:|:--------------------------------:|
 | `name`        | [string]?      | The ID or name of the plugin.    |
 **Returns:** [Promise]\<[Plugin](#Plugin)>
 
-### getIcons()
+### .getIcons()
 
 **Returns:** [Promise]<[Collection]<[string], [Icon](#icon)>>
 
-### getPlugin()
+### .getPlugin()
 
 | Parameter     | Type          | Description                      |
 |:-------------:|:-------------:|:--------------------------------:|
@@ -107,8 +107,8 @@ The `Server` class represents a Minehut server accessible with no authorization 
 
 There are also 2 methods: 
 
-* `fetchPlugins(): Promise<void>` - Fetches plugins (doesn't return them)
-* `fetchIcons(): Promise<void>` - Fetches icons (doesn't return them)
+* `.fetchPlugins(): Promise<void>` - Fetches plugins (doesn't return them)
+* `.fetchIcons(): Promise<void>` - Fetches icons (doesn't return them)
 
 The reason these exist is because Minehut.js doesn't store the plugins and icons as their respective class instances right away, which also explains why some plugin and icon properties are marked as partial.
 
@@ -170,7 +170,7 @@ Once successfully logged in, the `callback` function will fire, at which point y
 | `id`     | [string]      |
 | `token`  | [string]      |
 
-There's also a `fetch()` method, but I don't recommend using it.
+There's also a `.fetch()` method, but I don't recommend using it.
 
 * `fetch(url: string, method?: string, body?: Object<any>)` - Fetches with authorization.
     * **Returns:** [Promise]\<[Response]>
@@ -218,17 +218,17 @@ Object containing information of a user's linked minecraft account.
 
 It does have a ton of new methods:
 
-### start()
+### .start()
 
 **Description:** Starts the server up.</br>
 **Returns:** [Promise]\<void>
 
-### restart()
+### .restart()
 
 **Description:** Restarts the server.</br>
 **Returns:** [Promise]\<void>
 
-### stop()
+### .stop()
 
 | Parameter | Type      | Default | Description                         |
 |:---------:|:---------:|:-------:|:-----------------------------------:|
@@ -237,7 +237,34 @@ It does have a ton of new methods:
 **Description:** Starts the server up.</br>
 **Returns:** [Promise]\<void>
 
-### sendCommand()
+### .setName()
+
+| Parameter | Type     | Description          |
+|:---------:|:--------:|:--------------------:|
+| `name`    | [string] | The new server name. |
+
+**Description:** Changes the server name.</br>
+**Returns:** [Promise]\<void>
+
+### .setMOTD()
+
+| Parameter | Type     | Description          |
+|:---------:|:--------:|:--------------------:|
+| `motd`    | [string] | The new server MOTD. |
+
+**Description:** Changes the server MOTD.</br>
+**Returns:** [Promise]\<void>
+
+### .setVisibility()
+
+| Parameter   | Type      | Description                           |
+|:-----------:|:---------:|:-------------------------------------:|
+| `isVisible` | [boolean] | Whether the server is visible or not. |
+
+**Description:** Changes the server visibility.</br>
+**Returns:** [Promise]\<void>
+
+### .sendCommand()
 
 | Parameter | Type     | Description             |
 |:---------:|:--------:|:-----------------------:|
@@ -246,7 +273,7 @@ It does have a ton of new methods:
 **Description:** Sends a command to the server.</br>
 **Returns:** [Promise]\<void>
 
-### editProperties()
+### .editProperties()
 
 | Parameter    | Type                                             | Description             |
 |:------------:|:------------------------------------------------:|:-----------------------:|
@@ -255,7 +282,7 @@ It does have a ton of new methods:
 **Description:** Edits the server properties.</br>
 **Returns:** [Promise]\<void>
 
-### purchaseIcon()
+### .purchaseIcon()
 
 | Parameter    | Type                      | Description           |
 |:------------:|:-------------------------:|:---------------------:|
@@ -264,7 +291,7 @@ It does have a ton of new methods:
 **Description:** Purchases an icon.</br>
 **Returns:** [Promise]\<void>
 
-### setIcon()
+### .setIcon()
 
 | Parameter    | Type                                | Description           |
 |:------------:|:-----------------------------------:|:---------------------:|
@@ -273,7 +300,7 @@ It does have a ton of new methods:
 **Description:** Changes the server's icon.</br>
 **Returns:** [Promise]\<void>
 
-### installPlugin()
+### .installPlugin()
 
 | Parameter    | Type                          | Description           |
 |:------------:|:-----------------------------:|:---------------------:|
@@ -282,7 +309,7 @@ It does have a ton of new methods:
 **Description:** Installs a plugin.</br>
 **Returns:** [Promise]\<void>
 
-### resetPlugin()
+### .resetPlugin()
 
 | Parameter    | Type                          | Description          |
 |:------------:|:-----------------------------:|:--------------------:|
@@ -291,7 +318,7 @@ It does have a ton of new methods:
 **Description:** Resets plugin data.</br>
 **Returns:** [Promise]\<void>
 
-### uninstallPlugin()
+### .uninstallPlugin()
 
 | Parameter    | Type                          | Description             |
 |:------------:|:-----------------------------:|:-----------------------:|
@@ -300,7 +327,7 @@ It does have a ton of new methods:
 **Description:** Uninstalls a plugin.</br>
 **Returns:** [Promise]\<void>
 
-### refresh()
+### .refresh()
 
 **Description:** Re-fetches the server properties.<br/>
 **Returns:** [Promise]\<void>
