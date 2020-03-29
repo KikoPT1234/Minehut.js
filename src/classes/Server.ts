@@ -8,6 +8,7 @@ import ServerProperties from "../interfaces/ServerProperties"
 import { User } from "./User"
 import { Session } from "./Session"
 import Minehut = require("..")
+import { FileManager } from "./FileManager"
 export class Server implements ServerDictionary {
     [key: string]: any
     id: string
@@ -142,6 +143,7 @@ function isServer(server: {[key: string]: any}) {
 export class SessionServer extends Server {
     owner: User
     session: Session
+    fileManager: FileManager
     status: string
     constructor(server: Server, user: User, session: Session) {
         super(server)
@@ -149,6 +151,7 @@ export class SessionServer extends Server {
         if (!session) throw new Error("Session not specified.")
         this.owner = user
         this.session = session
+        this.fileManager = new FileManager(this)
     }
 
     async start() {
@@ -174,6 +177,46 @@ export class SessionServer extends Server {
         const response = await this.session.fetch(url, "POST")
         if (response.status === 403 || response.status === 401) throw new Error("Invalid session.")
         if (response.status !== 200) throw new Error("There was an error.")
+        return
+    }
+
+    async setName(name: string) {
+        if (!name) throw new Error("Name not specified.")
+        if (name.length > 10) throw new Error("Name too long. Maximum is 10 characters")
+        if (name.length < 4) throw new Error("Name too short. Minimum is 4 characters")
+        if (this.status === "SERVICE_OFFLINE") throw new Error("Service is offline.")
+        const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/change_name`, "POST", {
+            name
+        })
+        if (response.status === 403 || response.status === 401) throw new Error("Invalid session.")
+        if (response.status === 400) throw new Error("Name is already being used.")
+        if (response.status !== 200) throw new Error("There was an error.")
+        this.name === name
+        return
+    }
+
+    async setMotd(motd: string) {
+        if (!motd) throw new Error("MOTD not specified.")
+        if (motd.length > 64) throw new Error("MOTD too long. Maximum is 64 characters")
+        if (this.status === "SERVICE_OFFLINE") throw new Error("Service is offline.")
+        const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/change_motd`, "POST", {
+            motd
+        })
+        if (response.status === 403 || response.status === 401) throw new Error("Invalid session.")
+        if (response.status !== 200) throw new Error("There was an error.")
+        this.motd = motd
+        return
+    }
+
+    async setVisibility(isVisible: boolean) {
+        if (!isVisible) throw new Error("Visibility not specified.")
+        if (this.status === "SERVICE_OFFLINE") throw new Error("Service is offline.")
+        const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/visibility`, "POST", {
+            visibility: isVisible.toString()
+        })
+        if (response.status === 403 || response.status === 401) throw new Error("Invalid session.")
+        if (response.status !== 200) throw new Error("There was an error.")
+        this.visibility = isVisible
         return
     }
 

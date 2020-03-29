@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Icon_1 = require("./Icon");
 const Plugin_1 = require("./Plugin");
+const FileManager_1 = require("./FileManager");
 class Server {
     constructor(server) {
         this.pluginIds = [];
@@ -132,6 +133,7 @@ class SessionServer extends Server {
             throw new Error("Session not specified.");
         this.owner = user;
         this.session = session;
+        this.fileManager = new FileManager_1.FileManager(this);
     }
     async start() {
         if (this.status !== "OFFLINE" && this.status !== "SERVICE_OFFLINE")
@@ -163,6 +165,59 @@ class SessionServer extends Server {
             throw new Error("Invalid session.");
         if (response.status !== 200)
             throw new Error("There was an error.");
+        return;
+    }
+    async setName(name) {
+        if (!name)
+            throw new Error("Name not specified.");
+        if (name.length > 10)
+            throw new Error("Name too long. Maximum is 10 characters");
+        if (name.length < 4)
+            throw new Error("Name too short. Minimum is 4 characters");
+        if (this.status === "SERVICE_OFFLINE")
+            throw new Error("Service is offline.");
+        const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/change_name`, "POST", {
+            name
+        });
+        if (response.status === 403 || response.status === 401)
+            throw new Error("Invalid session.");
+        if (response.status === 400)
+            throw new Error("Name is already being used.");
+        if (response.status !== 200)
+            throw new Error("There was an error.");
+        this.name === name;
+        return;
+    }
+    async setMotd(motd) {
+        if (!motd)
+            throw new Error("MOTD not specified.");
+        if (motd.length > 64)
+            throw new Error("MOTD too long. Maximum is 64 characters");
+        if (this.status === "SERVICE_OFFLINE")
+            throw new Error("Service is offline.");
+        const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/change_motd`, "POST", {
+            motd
+        });
+        if (response.status === 403 || response.status === 401)
+            throw new Error("Invalid session.");
+        if (response.status !== 200)
+            throw new Error("There was an error.");
+        this.motd = motd;
+        return;
+    }
+    async setVisibility(isVisible) {
+        if (!isVisible)
+            throw new Error("Visibility not specified.");
+        if (this.status === "SERVICE_OFFLINE")
+            throw new Error("Service is offline.");
+        const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/visibility`, "POST", {
+            visibility: isVisible.toString()
+        });
+        if (response.status === 403 || response.status === 401)
+            throw new Error("Invalid session.");
+        if (response.status !== 200)
+            throw new Error("There was an error.");
+        this.visibility = isVisible;
         return;
     }
     async sendCommand(command) {
