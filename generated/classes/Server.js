@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Icon_1 = require("./Icon");
 const Plugin_1 = require("./Plugin");
 const FileManager_1 = require("./FileManager");
+const APIError_1 = require("./APIError");
 class Server {
     constructor(server) {
         this.pluginIds = [];
@@ -140,31 +141,28 @@ class SessionServer extends Server {
             throw new Error("Server is already online.");
         const url = `https://api.minehut.com/server/${this.id}/${this.status === "OFFLINE" ? "start" : "start_service"}`;
         const response = await this.session.fetch(url, "POST");
-        if (response.status === 403 || response.status === 401)
-            throw new Error("Invalid session.");
-        if (response.status !== 200)
-            throw new Error("There was an error.");
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
         return;
     }
     async restart() {
         if (!this.online)
             throw new Error("Server is not online.");
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/restart`, "POST");
-        if (response.status === 403 || response.status === 401)
-            throw new Error("Invalid session.");
-        if (response.status !== 200)
-            throw new Error("There was an error.");
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
         return;
     }
     async stop(service = false) {
-        if ((!service && this.status === "OFFLINE") || this.status === "SERVICE_OFFLINE")
+        if ((!service && this.status === "OFFLINE") || this.isOffline())
             throw new Error("Server is already offline.");
         const url = `https://api.minehut.com/server/${this.id}/${service ? "destroy_service" : "shutdown"}`;
         const response = await this.session.fetch(url, "POST");
-        if (response.status === 403 || response.status === 401)
-            throw new Error("Invalid session.");
-        if (response.status !== 200)
-            throw new Error("There was an error.");
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
         return;
     }
     async setName(name) {
@@ -174,17 +172,14 @@ class SessionServer extends Server {
             throw new Error("Name too long. Maximum is 10 characters");
         if (name.length < 4)
             throw new Error("Name too short. Minimum is 4 characters");
-        if (this.status === "SERVICE_OFFLINE")
+        if (this.isOffline())
             throw new Error("Service is offline.");
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/change_name`, "POST", {
             name
         });
-        if (response.status === 403 || response.status === 401)
-            throw new Error("Invalid session.");
-        if (response.status === 400)
-            throw new Error("Name is already being used.");
-        if (response.status !== 200)
-            throw new Error("There was an error.");
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
         this.name === name;
         return;
     }
@@ -193,30 +188,28 @@ class SessionServer extends Server {
             throw new Error("MOTD not specified.");
         if (motd.length > 64)
             throw new Error("MOTD too long. Maximum is 64 characters");
-        if (this.status === "SERVICE_OFFLINE")
+        if (this.isOffline())
             throw new Error("Service is offline.");
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/change_motd`, "POST", {
             motd
         });
-        if (response.status === 403 || response.status === 401)
-            throw new Error("Invalid session.");
-        if (response.status !== 200)
-            throw new Error("There was an error.");
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
         this.motd = motd;
         return;
     }
     async setVisibility(isVisible) {
         if (!isVisible)
             throw new Error("Visibility not specified.");
-        if (this.status === "SERVICE_OFFLINE")
+        if (this.isOffline())
             throw new Error("Service is offline.");
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/visibility`, "POST", {
             visibility: isVisible.toString()
         });
-        if (response.status === 403 || response.status === 401)
-            throw new Error("Invalid session.");
-        if (response.status !== 200)
-            throw new Error("There was an error.");
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
         this.visibility = isVisible;
         return;
     }
@@ -227,12 +220,13 @@ class SessionServer extends Server {
             throw new Error("Command not specified.");
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/send_command`, "POST", { command });
         console.log(response.body);
-        if (response.status !== 200)
-            throw new Error(`There was an error while running the command ${command}: ${await response.json()}`);
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
         return;
     }
     async editProperties(properties) {
-        if (this.status === "SERVICE_OFFLINE")
+        if (this.isOffline())
             throw new Error("Service is offline.");
         const array = [];
         Object.keys(properties).forEach((prop) => {
@@ -269,10 +263,9 @@ class SessionServer extends Server {
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/icon/purchase`, "POST", {
             icon_id: id
         });
-        if (response.status === 401)
-            throw new Error("Not enough credits.");
-        if (!response.status.toString().startsWith("2"))
-            throw new Error("There was an error.");
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
         const icon = await Minehut.getIcon(id);
         this.iconIds.push(id);
         this.icons.set(id, icon);
@@ -293,10 +286,9 @@ class SessionServer extends Server {
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/icon/equip`, "POST", id ? {
             icon_id: id
         } : {});
-        if (response.status === 409)
-            throw new Error("Server does not own that icon.");
-        if (response.status === 500)
-            throw new Error("Icon not found.");
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
         if (id === null)
             this.iconName, this.iconId, this.icon = null;
         else {
@@ -308,7 +300,7 @@ class SessionServer extends Server {
         return;
     }
     async installPlugin(identifier) {
-        if (this.status === "SERVICE_OFFLINE")
+        if (this.isOffline())
             throw new Error("Service is offline.");
         const Minehut = require("../index");
         let id = "";
@@ -326,10 +318,9 @@ class SessionServer extends Server {
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/install_plugin`, "POST", {
             plugin: id
         });
-        if (response.status === 400)
-            throw new Error("Plugin not found.");
-        if (response.status !== 200)
-            throw new Error("There was an error.");
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
         const plugin = await Minehut.getPlugin(id);
         this.pluginIds.push(id);
         if (this.plugins && this.plugins.size > 0)
@@ -337,7 +328,7 @@ class SessionServer extends Server {
         return;
     }
     async resetPlugin(identifier) {
-        if (this.status === "SERVICE_OFFLINE")
+        if (this.isOffline())
             throw new Error("Service is offline.");
         const Minehut = require("../index");
         let id = "";
@@ -355,14 +346,13 @@ class SessionServer extends Server {
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/remove_plugin_data`, "POST", {
             plugin: id
         });
-        if (response.status === 400)
-            throw new Error("Plugin not found.");
-        if (response.status !== 200)
-            throw new Error("There was an error.");
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
         return;
     }
     async uninstallPlugin(identifier) {
-        if (this.status === "SERVICE_OFFLINE")
+        if (this.isOffline())
             throw new Error("Service is offline.");
         const Minehut = require("../index");
         let id = "";
@@ -380,23 +370,24 @@ class SessionServer extends Server {
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/remove_plugin`, "POST", {
             plugin: id
         });
-        if (response.status === 400)
-            throw new Error("Plugin not found.");
-        if (response.status !== 200)
-            throw new Error("There was an error.");
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
         delete this.pluginIds[this.pluginIds.indexOf(id)];
         if (this.plugins && this.plugins.size > 0)
             this.plugins.delete(id);
         return;
     }
+    isOffline() {
+        return this.status.includes("SERVICE");
+    }
     async refresh() {
         const response = await this.session.fetch(`https://api.minehut.com/servers/${this.owner.id}/all_data`);
-        if (response.status === 403 || response.status === 401)
-            throw new Error("Invalid session.");
-        if (response.status !== 200)
-            throw new Error("There was an error.");
         let server = await response.json();
+        if (server.error)
+            throw new APIError_1.APIError(server.error.replace("Error: ", ""));
         server = server.find((s) => s._id === this.id);
+        this.pluginIds = [];
         for (let i in server) {
             let key = i;
             let val = server[i];
@@ -416,15 +407,17 @@ class SessionServer extends Server {
                 key = "iconIds";
             }
             else if (key === "__v")
-                this.v = server[i];
+                key = "v";
             else if (key === "purchased_plugins") {
-                key = "purchasedPluginIds";
+                this.pluginIds.push(...val);
+                continue;
             }
             else if (key === "active_plugins") {
-                key = "pluginIds";
+                this.pluginIds.push(...val);
+                continue;
             }
             else if (key === "plugins_loaded") {
-                key = "loadedPluginIds";
+                continue;
             }
             else if (key === "server_properties") {
                 const props = server[i];
@@ -432,12 +425,12 @@ class SessionServer extends Server {
                 for (let i in props) {
                     val[i.replace(/_(.)/g, e => e[1].toUpperCase())] = props[i];
                 }
-                key = "serverProperties";
+                key = "properties";
             }
             else if (key === "metrics")
                 continue;
             else
-                key = key.replace(/_(.)/g, (e) => e[1].toUpperCase());
+                key = key.replace(/_(.)/g, e => e[1].toUpperCase());
             this[key] = val;
         }
         await Promise.all([this.fetchIcons(), this.fetchPlugins()]);

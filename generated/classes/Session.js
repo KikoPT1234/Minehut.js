@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const collection_1 = require("@discordjs/collection");
 const Server_1 = require("./Server");
 const User_1 = require("./User");
+const APIError_1 = require("./APIError");
 const fetch = require("node-fetch");
 class Session {
     constructor(credentials, onceLogged) {
@@ -15,9 +16,9 @@ class Session {
             },
             body: JSON.stringify(credentials)
         }).then(async (session) => {
-            if (session.status === 401)
-                throw new Error("Invalid email and/or password.");
             session = await session.json();
+            if (session.error)
+                throw new APIError_1.APIError(session.error.replace("Error: ", ""));
             this.id = session.sessionId;
             this.token = session.token;
             let user = await this.fetch(`https://api.minehut.com/user/${session._id}`);
@@ -40,8 +41,7 @@ class Session {
                 "Content-Type": "application/json",
                 "Authorization": this.token,
                 "X-Session-Id": this.id
-            },
-            body: undefined
+            }
         };
         if (body)
             settings.body = JSON.stringify(body);
