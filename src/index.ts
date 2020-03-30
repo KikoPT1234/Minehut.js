@@ -12,19 +12,7 @@ function getId(id: string): ID {
     return id as ID
 }
 
-interface Minehut {
-    getServers(): Promise<Collection<ID, Server>>
-    getServer(name: string, byName: boolean): Promise<Server>
-    getPlugins(): Promise<Collection<ID, Plugin>>
-    getPlugin(name: string, byName: boolean): Promise<Plugin>
-    getIcons(): Promise<Collection<ID, Icon>>
-    getIcon(name: string, byName: boolean): Promise<Icon>
-    getPlayerCount(separated: boolean): Promise<number | {lobbies: number, servers: number}>
-
-    Session: Function
-}
-
-const Minehut: Minehut = {
+const Minehut = {
     async getServers() {
         let servers = await fetch("https://api.minehut.com/servers")
         servers = await servers.json()
@@ -74,12 +62,28 @@ const Minehut: Minehut = {
         if (!icon) throw new Error("Icon not found.")
         return icon
     },
-    async getPlayerCount(separated: boolean = false) {
-        const res: Response = await fetch("https://api.minehut.com/network/players/distribution")
-        const count = await res.json()
-        return separated ? count.lobby + count.player_server : {
-            lobbies: count.lobby,
-            servers: count.player_server
+    async getStats() {
+        const simpleStats = fetch("https://api.minehut.com/network/simple_stats")
+        const homepageStats = fetch("https://api.minehut.com/network/homepage_stats")
+        let [simple, home] = await Promise.all([simpleStats, homepageStats])
+        let count = await fetch("https://api.minehut.com/network/players/distribution")
+        count = await count.json()
+        simple = await simple.json()
+        home = await home.json()
+        return {
+            serverCount: {
+                online: simple.server_count,
+                total: home.server_count
+            },
+            playerCount: {
+                total: count.lobby + count.player_server,
+                lobbies: count.lobby,
+                servers: count.player_server
+            },
+            userCount: home.user_count,
+            maxServerCount: simple.server_max,
+            ramCount: simple.ram_count,
+            maxRam: simple.ram_max,
         }
     },
     Session

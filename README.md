@@ -7,6 +7,7 @@ This package wouldn't have been possible without the help of my friend DeltaRays
 
 Minehut.js is a TypeScript and JavaScript library that allows you to interact with the Minehut API.
 
+**Version 1.1.0**
 **Created by Kiko#6282**
 
 ## Collections
@@ -38,6 +39,7 @@ The `Minehut` object contains some methods and properties:
 * [`getPlugin(name: string)`](#getplugin)
 * [`getIcons()`](#geticons)
 * [`getIcon(name: string)`](#geticon)
+* [`getStats()`](#getstats)
 
 ### Session
 See [Session](#session-1)
@@ -50,7 +52,7 @@ See [Session](#session-1)
 
 | Parameter     | Type          | Description                      |
 |:-------------:|:-------------:|:--------------------------------:|
-| `name`        | [string]?      | The ID or name of the server.    |
+| `name`        | [string]?      | The ID or name of the server.   |
 
 **Returns:** [Promise]\<[Server](#Server)>
 
@@ -62,20 +64,38 @@ See [Session](#session-1)
 
 | Parameter     | Type          | Description                      |
 |:-------------:|:-------------:|:--------------------------------:|
-| `name`        | [string]?      | The ID or name of the plugin.    |
+| `name`        | [string]?      | The ID or name of the plugin.   |
 **Returns:** [Promise]\<[Plugin](#Plugin)>
 
 ### .getIcons()
 
 **Returns:** [Promise]<[Collection]<[string], [Icon](#icon)>>
 
-### .getPlugin()
+### .getIcon()
 
 | Parameter     | Type          | Description                      |
 |:-------------:|:-------------:|:--------------------------------:|
-| `name`        | [string]?      | The ID or name of the icon.      |
+| `name`        | [string]?      | The ID or name of the icon.     |
 
 **Returns:** [Promise]\<[Icon](#icon)>
+
+### .getStats()
+
+**Returns:** [Promise]<[MinehutStats](#minehutstats)>
+
+
+## MinehutStats
+
+Represents an object containing network statistics.
+
+| Property           | Type                                                              |
+|:------------------:|:-----------------------------------------------------------------:|
+| `serverCount`      | [Object] { online: [number], total: [number] }                    |
+| `playerCount`      | [Object] { total: [number], lobbies: [number], servers: [number]} |
+| `userCount`        | [number]                                                          |
+| `maxServerCount`   | [number]                                                          |
+| `ramCount`         | [number]                                                          |
+| `maxRam`           | [number]                                                          |
 
 ## Server
 
@@ -468,6 +488,7 @@ The `ServerProperties` type contains all of the properties that servers can have
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object
 [Response]: https://developer.mozilla.org/en-US/docs/Web/API/Response
 [Partial]: https://www.typescriptlang.org/docs/handbook/utility-types.html#partialt
 [Null]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Null
