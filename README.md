@@ -185,7 +185,7 @@ new Minehut.Session(credentials: Object { email: string, password: string }, cal
 
 | Parameter     | Type                                       | Description                                                   |
 |:-------------:|:------------------------------------------:|:-------------------------------------------------------------:|
-| `credentials` | Object { email: [string], password: [string] } | Minehut email and password.                                   |
+| `credentials` | [Object] { email: [string], password: [string] } | Minehut email and password.                                   |
 | `callback`    | [Function]                     | The callback function to execute once successfully logged in. |
 
 Once successfully logged in, the `callback` function will fire, at which point you should have access to all of the properties belonging to `Session`.
