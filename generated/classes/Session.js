@@ -16,9 +16,10 @@ class Session {
             },
             body: JSON.stringify(credentials)
         }).then(async (session) => {
+            let e;
             session = await session.json();
             if (session.error)
-                throw new APIError_1.APIError(session.error.replace("Error: ", ""));
+                return onceLogged(new APIError_1.APIError(session.error.replace("Error: ", "")));
             this.id = session.sessionId;
             this.token = session.token;
             let user = await this.fetch(`https://api.minehut.com/user/${session._id}`);
