@@ -9,6 +9,7 @@ import { User } from "./User"
 import { Session } from "./Session"
 import Minehut = require("..")
 import { FileManager } from "./FileManager"
+import { APIError } from "./APIError"
 export class Server implements ServerDictionary {
     [key: string]: any
     id: string
@@ -40,7 +41,7 @@ export class Server implements ServerDictionary {
     constructor(server: MHServerObj | Server) {
         if (!server) throw new Error("Server not specified")
         if (!(server instanceof Server) && !isServer(server)) throw new Error("Invalid Server.")
-        for (let i in server as Object) {
+        for (let i in server) {
             let key = i
             let val = server[i]
             if (key === "_id") key = "id"
@@ -158,25 +159,25 @@ export class SessionServer extends Server {
         if (this.status !== "OFFLINE" && this.status !== "SERVICE_OFFLINE") throw new Error("Server is already online.")
         const url = `https://api.minehut.com/server/${this.id}/${this.status === "OFFLINE" ? "start" : "start_service"}`
         const response = await this.session.fetch(url, "POST")
-        if (response.status === 403 || response.status === 401) throw new Error("Invalid session.")
-        if (response.status !== 200) throw new Error("There was an error.")
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
         return
     }
 
     async restart() {
         if (!this.online) throw new Error("Server is not online.")
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/restart`, "POST")
-        if (response.status === 403 || response.status === 401) throw new Error("Invalid session.")
-        if (response.status !== 200) throw new Error("There was an error.")
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
         return
     }
 
     async stop(service: boolean = false) {
-        if ((!service && this.status === "OFFLINE") || this.status === "SERVICE_OFFLINE") throw new Error("Server is already offline.")
+        if ((!service && this.status === "OFFLINE") || this.isOffline()) throw new Error("Server is already offline.")
         const url = `https://api.minehut.com/server/${this.id}/${service ? "destroy_service" : "shutdown"}`
         const response = await this.session.fetch(url, "POST")
-        if (response.status === 403 || response.status === 401) throw new Error("Invalid session.")
-        if (response.status !== 200) throw new Error("There was an error.")
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
         return
     }
 
@@ -184,13 +185,12 @@ export class SessionServer extends Server {
         if (!name) throw new Error("Name not specified.")
         if (name.length > 10) throw new Error("Name too long. Maximum is 10 characters")
         if (name.length < 4) throw new Error("Name too short. Minimum is 4 characters")
-        if (this.status === "SERVICE_OFFLINE") throw new Error("Service is offline.")
+        if (this.isOffline()) throw new Error("Service is offline.")
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/change_name`, "POST", {
             name
         })
-        if (response.status === 403 || response.status === 401) throw new Error("Invalid session.")
-        if (response.status === 400) throw new Error("Name is already being used.")
-        if (response.status !== 200) throw new Error("There was an error.")
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
         this.name === name
         return
     }
@@ -198,24 +198,24 @@ export class SessionServer extends Server {
     async setMotd(motd: string) {
         if (!motd) throw new Error("MOTD not specified.")
         if (motd.length > 64) throw new Error("MOTD too long. Maximum is 64 characters")
-        if (this.status === "SERVICE_OFFLINE") throw new Error("Service is offline.")
+        if (this.isOffline()) throw new Error("Service is offline.")
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/change_motd`, "POST", {
             motd
         })
-        if (response.status === 403 || response.status === 401) throw new Error("Invalid session.")
-        if (response.status !== 200) throw new Error("There was an error.")
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
         this.motd = motd
         return
     }
 
     async setVisibility(isVisible: boolean) {
         if (!isVisible) throw new Error("Visibility not specified.")
-        if (this.status === "SERVICE_OFFLINE") throw new Error("Service is offline.")
+        if (this.isOffline()) throw new Error("Service is offline.")
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/visibility`, "POST", {
             visibility: isVisible.toString()
         })
-        if (response.status === 403 || response.status === 401) throw new Error("Invalid session.")
-        if (response.status !== 200) throw new Error("There was an error.")
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
         this.visibility = isVisible
         return
     }
@@ -225,12 +225,13 @@ export class SessionServer extends Server {
         if (!command) throw new Error("Command not specified.")
         const response: Response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/send_command`, "POST", {command})
         console.log(response.body)
-        if (response.status !== 200) throw new Error(`There was an error while running the command ${command}: ${await response.json()}`)
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
         return
     }
 
     async editProperties(properties: Partial<ServerProperties>) {
-        if (this.status === "SERVICE_OFFLINE") throw new Error("Service is offline.")
+        if (this.isOffline()) throw new Error("Service is offline.")
         const array: Promise<Response>[] = []
         Object.keys(properties).forEach((prop: string) => {
             const body = {
@@ -261,8 +262,8 @@ export class SessionServer extends Server {
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/icon/purchase`, "POST", {
             icon_id: id
         })
-        if (response.status === 401) throw new Error("Not enough credits.")
-        if (!response.status.toString().startsWith("2")) throw new Error("There was an error.")
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
         const icon = await Minehut.getIcon(id)
         this.iconIds.push(id)
         this.icons.set(id, icon)
@@ -281,8 +282,8 @@ export class SessionServer extends Server {
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/icon/equip`, "POST", id ? {
             icon_id: id
         } : {})
-        if (response.status === 409) throw new Error("Server does not own that icon.")
-        if (response.status === 500) throw new Error("Icon not found.")
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
         if (id === null) this.iconName, this.iconId, this.icon = null
         else {
             const icon = await Minehut.getIcon(id)
@@ -294,7 +295,7 @@ export class SessionServer extends Server {
     }
 
     async installPlugin(identifier: string | Plugin) {
-        if (this.status === "SERVICE_OFFLINE") throw new Error("Service is offline.")
+        if (this.isOffline()) throw new Error("Service is offline.")
         const Minehut = require("../index")
         let id = ""
         if (!identifier) id = null
@@ -307,8 +308,8 @@ export class SessionServer extends Server {
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/install_plugin`, "POST", {
             plugin: id
         })
-        if (response.status === 400) throw new Error("Plugin not found.")
-        if (response.status !== 200) throw new Error("There was an error.")
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
         const plugin = await Minehut.getPlugin(id)
         this.pluginIds.push(id)
         if (this.plugins && this.plugins.size > 0) this.plugins.set(id, plugin)
@@ -316,7 +317,7 @@ export class SessionServer extends Server {
     }
 
     async resetPlugin(identifier: string | Plugin) {
-        if (this.status === "SERVICE_OFFLINE") throw new Error("Service is offline.")
+        if (this.isOffline()) throw new Error("Service is offline.")
         const Minehut = require("../index")
         let id = ""
         if (!identifier) id = null
@@ -329,13 +330,13 @@ export class SessionServer extends Server {
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/remove_plugin_data`, "POST", {
             plugin: id
         })
-        if (response.status === 400) throw new Error("Plugin not found.")
-        if (response.status !== 200) throw new Error("There was an error.")
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
         return
     }
 
     async uninstallPlugin(identifier: string | Plugin) {
-        if (this.status === "SERVICE_OFFLINE") throw new Error("Service is offline.")
+        if (this.isOffline()) throw new Error("Service is offline.")
         const Minehut = require("../index")
         let id = ""
         if (!identifier) id = null
@@ -348,22 +349,26 @@ export class SessionServer extends Server {
         const response = await this.session.fetch(`https://api.minehut.com/server/${this.id}/remove_plugin`, "POST", {
             plugin: id
         })
-        if (response.status === 400) throw new Error("Plugin not found.")
-        if (response.status !== 200) throw new Error("There was an error.")
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
         delete this.pluginIds[this.pluginIds.indexOf(id)]
         if (this.plugins && this.plugins.size > 0) this.plugins.delete(id)
         return
     }
 
+    isOffline() {
+        return this.status.includes("SERVICE")
+    }
+
     async refresh() {
         const response: Response = await this.session.fetch(`https://api.minehut.com/servers/${this.owner.id}/all_data`)
-        if (response.status === 403 || response.status === 401) throw new Error("Invalid session.")
-        if (response.status !== 200) throw new Error("There was an error.")
         let server = await response.json()
+        if (server.error) throw new APIError(server.error.replace("Error: ", ""))
         server = server.find((s: {[key: string]: any}) => s._id === this.id)
+        this.pluginIds = []
         for (let i in server) {
-            let key: any = i
-            let val: any = server[i]
+            let key = i
+            let val = server[i]
             if (key === "_id") key = "id"
             else if (key === "ip") continue
             else if (key === "active_icon" && server[i]) {
@@ -376,15 +381,17 @@ export class SessionServer extends Server {
             else if (key === "purchased_icons" && server[i]) {
                 key = "iconIds"
             }
-            else if (key === "__v") this.v = server[i]
+            else if (key === "__v") key = "v"
             else if (key === "purchased_plugins") {
-                key = "purchasedPluginIds"
+                this.pluginIds.push(...val)
+                continue
             }
             else if (key === "active_plugins") {
-                key = "pluginIds"
+                this.pluginIds.push(...val)
+                continue
             }
             else if (key === "plugins_loaded") {
-                key = "loadedPluginIds"
+                continue
             }
             else if (key === "server_properties") {
                 const props = server[i]
@@ -392,10 +399,10 @@ export class SessionServer extends Server {
                 for (let i in props) {
                     val[i.replace(/_(.)/g, e => e[1].toUpperCase())] = props[i]
                 }
-                key = "serverProperties"
+                key = "properties"
             }
             else if (key === "metrics") continue
-            else key = key.replace(/_(.)/g, (e: string) => e[1].toUpperCase())
+            else key = key.replace(/_(.)/g, e => e[1].toUpperCase())
             this[key] = val
         }
         await Promise.all([this.fetchIcons(), this.fetchPlugins()])

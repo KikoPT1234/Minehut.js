@@ -1,6 +1,6 @@
 {
   "name": "minehut.js",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "A library for interacting with the Minehut API.",
   "main": "generated/index.js",
   "scripts": {
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/KikoPT1234/Minehut.js#readme",
   "dependencies": {
     "@discordjs/collection": "^0.1.5",
+    "form-data": "^3.0.0",
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {

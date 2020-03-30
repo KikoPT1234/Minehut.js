@@ -2,6 +2,7 @@ import Collection from "@discordjs/collection"
 import { Server, SessionServer } from "./Server"
 import { stringify } from "querystring"
 import { User } from "./User"
+import { APIError } from "./APIError"
 const fetch = require("node-fetch")
 export class Session {
     user: User
@@ -16,8 +17,8 @@ export class Session {
             },
             body: JSON.stringify(credentials)
         }).then(async (session: {[key: string]: any}) => {
-            if (session.status === 401) throw new Error("Invalid email and/or password.")
             session = await session.json()
+            if (session.error) throw new APIError(session.error.replace("Error: ", ""))
             this.id = session.sessionId
             this.token = session.token
             let user = await this.fetch(`https://api.minehut.com/user/${session._id}`)
@@ -39,8 +40,7 @@ export class Session {
                 "Content-Type": "application/json",
                 "Authorization": this.token,
                 "X-Session-Id": this.id
-            },
-            body: undefined
+            }
         }
         if (body) settings.body = JSON.stringify(body)
         const response = await fetch(url, settings)

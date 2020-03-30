@@ -1,12 +1,16 @@
 # Minehut.js
 
 ## IMPORTANT
-This library is still heavily under development, so don't expect much at the moment!
+This package wouldn't have been possible without the help of my friend DeltaRays#0054.
 
 ## About
+
 Minehut.js is a TypeScript and JavaScript library that allows you to interact with the Minehut API.
 
+**Created by Kiko#6282**
+
 ## Collections
+
 The library uses the `Collection` class from Discord.js due to its useful methods such as `.find()`, `.filter()` and `.first()`. For more information, check the [Discord.js Documentation][Collection].
 
 ## Example
@@ -24,15 +28,16 @@ const session = new Minehut.Session({
 ```
 
 ## Main Object
+
 The `Minehut` object contains some methods and properties:
 
 * [`Session`](#session)
 * [`getServers()`](#getservers)
-* [`getServer(name: string`](#getserver)
+* [`getServer(name: string)`](#getserver)
 * [`getPlugins()`](#getplugins)
-* [`getPlugin(name: string`](#getplugin)
+* [`getPlugin(name: string)`](#getplugin)
 * [`getIcons()`](#geticons)
-* [`getIcon(name: string`](#geticon)
+* [`getIcon(name: string)`](#geticon)
 
 ### Session
 See [Session](#session-1)
@@ -211,10 +216,11 @@ Object containing information of a user's linked minecraft account.
 
 `SessionServer` represents a server belonging to the logged in user. It extends [`Server`](#server) and only has 2 new properties:
 
-| Property  | Type                  |
-|:---------:|:---------------------:|
-| `owner`   | [User](#user)         |
-| `session` | [Session](#session-1) |
+| Property      | Type                        |
+|:-------------:|:---------------------------:|
+| `owner`       | [User](#user)               |
+| `session`     | [Session](#session-1)       |
+| `fileManager` | [FileManager](#filemanager) |
 
 It does have a ton of new methods:
 
@@ -331,6 +337,102 @@ It does have a ton of new methods:
 
 **Description:** Re-fetches the server properties.<br/>
 **Returns:** [Promise]\<void>
+
+## FileManager
+
+The `FileManager` class is used to manage everything that's file-related, such as world uploading, file creation and resets.
+
+| Property                | Type                            |
+|:-----------------------:|:-------------------------------:|
+| `user`                  | [User](#user)                   |
+| `server`                | [SessionServer](#sessionserver) |
+| `session`               | [Session](#session)             |
+
+### .createFile()
+
+| Parameter | Type      | Description             |
+|:---------:|:---------:|:-----------------------:|
+| `path`    | [string]? | The path to the file **without** its name. Specify an empty string if you're targeting the root directory. |
+| `name`    | [string]  | The file name.          |
+
+**Description:** Creates a file.</br>
+**Returns:** [Promise]\<void>
+
+### .editFile()
+
+| Parameter | Type      | Description                            |
+|:---------:|:---------:|:--------------------------------------:|
+| `path`    | [string] | The path to the file **with** its name. |
+| `content` | [string] | The new content.                        |
+
+**Description:** Edits a file.</br>
+**Returns:** [Promise]\<void>
+
+### .readFile()
+
+| Parameter | Type      | Description                            |
+|:---------:|:---------:|:--------------------------------------:|
+| `path`    | [string] | The path to the file **with** its name. |
+
+**Description:** Reads a file, returning its content.</br>
+**Returns:** [Promise]\<[string]>
+
+### .readDir()
+
+| Parameter | Type      | Description                            |
+|:---------:|:---------:|:--------------------------------------:|
+| `path`    | [string]? | The path to the directory. Specify an empty string for the root directory. |
+
+**Description:** Reads a directory, returning its children.</br>
+**Returns:** [Promise]\<[DirChild](#dirchild)[]>
+
+### .uploadWorld()
+
+| Parameter  | Type      | Description                            |
+|:----------:|:---------:|:--------------------------------------:|
+| `fullPath` | [string] | The **full path** to the **zip** file. |
+
+**Description:** Uploads a world.</br>
+**Returns:** [Promise]\<void>
+
+### .uploadWorld()
+
+| Parameter  | Type      | Description                            |
+|:----------:|:---------:|:--------------------------------------:|
+| `fullPath` | [string] | The **full path** to the **zip** file. |
+
+**Description:** Uploads a world.</br>
+**Returns:** [Promise]\<void>
+
+### .saveWorld()
+
+**Description:** Saves the world.</br>
+**Returns:** [Promise]\<void>
+
+### .resetWorld()
+
+**Description:** Resets the world. Use with caution!</br>
+**Returns:** [Promise]\<void>
+
+### .repairFiles()
+
+**Description:** Repairs the server's files.</br>
+**Returns:** [Promise]\<void>
+
+### .resetServer()
+
+**Description:** Resets the server. Use with caution!</br>
+**Returns:** [Promise]\<void>
+
+## DirChild
+
+An object with information about a directory's child element (file or folder).
+
+| Property    | Type       |
+|:-----------:|:----------:|
+| `name`      | [string]   |
+| `directory` | [boolean]  |
+| `blocked`   | [boolean]  |
 
 ## ServerProperties
 

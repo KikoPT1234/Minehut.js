@@ -23,11 +23,9 @@ const Minehut = {
     },
     async getServer(name) {
         let server = await fetch(`https://api.minehut.com/server/${name}${name.length !== 24 ? "?byName=true" : ""}`);
-        if (server.status === 502)
-            throw new Error("Server not found.");
-        else if (server.status !== 200)
-            throw new Error(`There was an error.`);
         server = await server.json();
+        if (server.error)
+            throw new Error(server.error.replace("Error: ", ""));
         const returnServer = new Server_1.Server(server.server);
         return returnServer;
     },
