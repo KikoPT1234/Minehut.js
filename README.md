@@ -23,7 +23,8 @@ const Minehut = require("minehut.js")
 const session = new Minehut.Session({
     email: "hello@testmail.com",
     password: "codingisawesome"
-}, async () => {
+}, async e => {
+    if (e) return console.error(e)
     const server = session.servers.first()
     await server.start()
 })
@@ -180,13 +181,13 @@ Like the `Plugin` class, the icon class also exists just for the sake of it.
 `Session` is the class that manages a user's session. The constructor is the following:
 
 ```typescript
-new Minehut.Session(credentials: Object { email: string, password: string }, callback: Function)
+new Minehut.Session(credentials: Object { email: string, password: string }, callback: Function(e: APIError?))
 ```
 
-| Parameter     | Type                                       | Description                                                   |
-|:-------------:|:------------------------------------------:|:-------------------------------------------------------------:|
+| Parameter     | Type                                             | Description                                                   |
+|:-------------:|:------------------------------------------------:|:-------------------------------------------------------------:|
 | `credentials` | [Object] { email: [string], password: [string] } | Minehut email and password.                                   |
-| `callback`    | [Function]                     | The callback function to execute once successfully logged in. |
+| `callback`    | [Function](e: APIError?)                         | The callback function to execute after trying to log in. If an error occurred, `e` will be that error. |
 
 Once successfully logged in, the `callback` function will fire, at which point you should have access to all of the properties belonging to `Session`.
 

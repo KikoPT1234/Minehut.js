@@ -17,8 +17,9 @@ export class Session {
             },
             body: JSON.stringify(credentials)
         }).then(async (session: {[key: string]: any}) => {
+            let e: APIError | Error
             session = await session.json()
-            if (session.error) throw new APIError(session.error.replace("Error: ", ""))
+            if (session.error) return onceLogged(new APIError(session.error.replace("Error: ", "")))
             this.id = session.sessionId
             this.token = session.token
             let user = await this.fetch(`https://api.minehut.com/user/${session._id}`)
