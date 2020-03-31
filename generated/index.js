@@ -5,6 +5,7 @@ const Server_1 = require("./classes/Server");
 const Session_1 = require("./classes/Session");
 const Icon_1 = require("./classes/Icon");
 const Plugin_1 = require("./classes/Plugin");
+const APIError_1 = require("./classes/APIError");
 function getId(id) {
     if (id.length !== 24 || id.toLowerCase() !== id)
         throw new TypeError("Not a valid ID.");
@@ -86,6 +87,70 @@ const Minehut = {
             ramCount: simple.ram_count,
             maxRam: simple.ram_max,
         };
+    },
+    async signup(email, birthday) {
+        if (!email || !birthday)
+            throw new Error("Email and/or birthday not provided.");
+        if (!email.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/))
+            throw new Error("Invalid email.");
+        const date = new Date(birthday);
+        if (date.toUTCString() === "Invalid Date")
+            throw new Error("Invalid date.");
+        const dateString = date.toISOString();
+        const response = await fetch("https://api.minehut.com/users/signup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email,
+                birthday: dateString
+            })
+        });
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
+        return;
+    },
+    async checkCode(code) {
+        if (!code)
+            throw new Error("Code not specified.");
+        const response = await fetch("https://api.minehut.com/users/check_email_code", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "email_code": code
+            })
+        });
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
+        console.log(response.status);
+        return;
+    },
+    async confirmEmail(password, code) {
+        if (!password || !code)
+            throw new Error("Password and/or code not specified.");
+        const response = await fetch("https://api.minehut.com/users/confirm_email", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                password,
+                "email_code": code
+            })
+        });
+        const { error } = await response.json();
+        if (error)
+            throw new APIError_1.APIError(error.replace("Error: ", ""));
+        return;
+    },
+    async getPromotion() {
+        const response = await fetch("https://api.minehut.com/website/navbar/promotion");
+        return await response.json();
     },
     Session: Session_1.Session
 };

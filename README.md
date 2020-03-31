@@ -7,7 +7,7 @@ This package wouldn't have been possible without the help of my friend DeltaRays
 
 Minehut.js is a TypeScript and JavaScript library that allows you to interact with the Minehut API.
 
-**Version 1.1.0**
+**Version 2.0.0**
 
 **Created by Kiko#6282**
 
@@ -42,6 +42,10 @@ The `Minehut` object contains some methods and properties:
 * [`getIcons()`](#geticons)
 * [`getIcon(name: string)`](#geticon)
 * [`getStats()`](#getstats)
+* [`getPromotion()`](#getpromotion)
+* [`signup`](#signup)
+* [`checkCode`](#checkcode)
+* [`confirmEmail`](#confirmemail)
 
 ### Session
 See [Session](#session-1)
@@ -85,6 +89,22 @@ See [Session](#session-1)
 
 **Returns:** [Promise]<[MinehutStats](#minehutstats)>
 
+### .getPromotion()
+
+**Returns:** [Promise]<[Object] { text: [string], link: [string] }>
+
+### .signup()
+
+**Returns:** [Promise]\<void>
+
+### .checkCode()
+
+**Returns:** [Promise]\<void>
+**NOTE:** While this method exists, I'm (still) not sure if it is necessary for signing up. Anyways, just to be sure, you should always use [`.signup()`](#signup), [`.checkCode()`](#checkcode) and [`.confirmEmail()`](#confirmemail)
+
+### .confirmEmail()
+
+**Returns:** [Promise]\<void>
 
 ## MinehutStats
 
@@ -121,21 +141,30 @@ The `Server` class represents a Minehut server accessible with no authorization 
 | `offer`               | [string]                        |
 | `properties`          | [ServerProperties](#serverproperties) |
 | `suspended`           | [boolean]                       |
-| `icons`      | [Collection]<[string], [Icon](#icon)>? |
-| `iconIds`    | [string][]?                     |
+| `icons`               | [Collection]<[string], [Icon](#icon)>? |
+| `iconIds`             | [string][]?                     |
 | `icon`                | [Icon](#icon)?                  |
 | `iconId`              | [string]?                       |
 | `iconName`            | [string]?                       |
 | `online`              | [boolean]                       |
 | `maxPlayers`          | [number]                        |
 | `playerCount`         | [number]                        |
-| `plugins`       | [Collection]<[string], [Plugin](#plugin)>? |
-| `pluginIds`     | [string][]                      |
+| `plugins`             | [Collection]<[string], [Plugin](#plugin)>? |
+| `pluginIds`           | [string][]                      |
 
 There are also 2 methods: 
 
-* `.fetchPlugins(): Promise<void>` - Fetches plugins (doesn't return them)
-* `.fetchIcons(): Promise<void>` - Fetches icons (doesn't return them)
+### .fetchPlugins()
+
+**Description:** Fetches plugins (doesn't return them, only assigns)
+
+**Returns:** [Promise]\<void>
+
+### .fetchIcons()
+
+**Description:** Fetches icons (doesn't return them, only assigns)
+
+**Returns:** [Promise]\<void>
 
 The reason these exist is because Minehut.js doesn't store the plugins and icons as their respective class instances right away, which also explains why some plugin and icon properties are marked as partial.
 
@@ -217,22 +246,18 @@ The `User` class represents a logged in Minehut user.
 | `emailCode`          | [string]                                                 |
 | `credits`            | [number]                                                 |
 | `lastLogin`          | [number]                                                 |
-| `lastPasswordChange` | [number]?                                                |
-| `minecraft`          | [Minecraft](#minecraft)?                                 |
+| `lastPasswordChange` | [number]                                                 |
+| `minecraft`          | [Minecraft](#minecraft)                                  |
 | `maxServers`         | [number]                                                 |
 | `serverIds`          | [string][]                                               |
-| `servers`            | [Collection]<[string], [SessionServer](#sessionserver)>? |
+| `servers`            | [Collection]<[string], [SessionServer](#sessionserver)>  |
+| `transactions`       | [Collection]<[string], [Transaction](#transaction)>      |
+| `payments`           | [Collection]<[string], [Payment](#payment)>              |
 
-### Minecraft
+### .refresh()
 
-Object containing information of a user's linked minecraft account.
-
-| Property       | Type     |
-|:--------------:|:--------:|
-| `linkCode`     | [string] |
-| `lastLinkTime` | [number] |
-| `username`     | [string] |
-| `uuid`         | [string] |
+**Description:** Re-fetches properties (doesn't return them, only assigns).
+**Returns:** [Promise]\<void>
 
 ## SessionServer
 
@@ -483,6 +508,61 @@ The `ServerProperties` type contains all of the properties that servers can have
 | `gamemode`                   | [number]  |
 | `maxPlayers`                 | [number]  |
 | `spawnProtection`            | [number]  |
+
+## Minecraft
+
+Object containing information of a user's linked minecraft account.
+
+| Property       | Type     |
+|:--------------:|:--------:|
+| `linkCode`     | [string] |
+| `lastLinkTime` | [number] |
+| `username`     | [string] |
+| `uuid`         | [string] |
+
+## Transaction
+
+Object containing information about a credit transaction.
+
+| Property    | Type     |
+|:-----------:|:--------:|
+| `id`        | [string] |
+| `user`      | [string] |
+| `userEmail` | [string] |
+| `ip`        | [string] |
+| `desc`      | [string] |
+| `type`      | [string] |
+| `pluginId`  | [string] | 
+| `serverId`  | [string] |
+| `price`     | [number] |
+| `time`      | [number] |
+| `v`         | [number] |
+
+## Payment
+
+Object containing information about a payment.
+
+| Property    | Type     |
+|:-----------:|:--------:|
+| `id`        | [string] |
+| `user`      | [string] |
+| `gateway`   | [string] |
+| `paymentId` | [string] |
+| `price`     | [number] |
+| `time`      | [number] |
+| `v`         | [number] |
+| `email`     | [number] |
+
+### Payment
+
+_id: "5abd14838e9e1e2855e1b11c"
+user: "5ab92d14f528e62f8860da98"
+gateway: "paypal"
+payment_id: "PAY-1H76100181653473ELK6RISI"
+price: 500
+time: 1522340995376
+__v: 0
+email: "carricokiko2006@gmail.com"
 
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
 [Collection]: https://discord.js.org/#/docs/collection/master/class/Collection

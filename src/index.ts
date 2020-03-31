@@ -5,6 +5,7 @@ import {Session} from "./classes/Session"
 import {Icon} from "./classes/Icon"
 import {Plugin} from "./classes/Plugin"
 import {MHServerObj} from "./interfaces/MHServerObj"
+import { APIError } from "./classes/APIError"
 type ID = string
 
 function getId(id: string): ID {
@@ -85,6 +86,62 @@ const Minehut = {
             ramCount: simple.ram_count,
             maxRam: simple.ram_max,
         }
+    },
+    async signup(email: string, birthday: string) {
+        if (!email || !birthday) throw new Error("Email and/or birthday not provided.")
+        if (!email.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) throw new Error("Invalid email.")
+        const date = new Date(birthday)
+        if (date.toUTCString() === "Invalid Date") throw new Error("Invalid date.")
+        const dateString = date.toISOString()
+        const response: Response = await fetch("https://api.minehut.com/users/signup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email,
+                birthday: dateString
+            })
+        })
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
+        return
+    },
+    async checkCode(code: string) {
+        if (!code) throw new Error("Code not specified.")
+        const response = await fetch("https://api.minehut.com/users/check_email_code", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "email_code": code
+            })
+        })
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
+        console.log(response.status)
+        return
+    },
+    async confirmEmail(password: string, code: string) {
+        if (!password || !code) throw new Error("Password and/or code not specified.")
+        const response = await fetch("https://api.minehut.com/users/confirm_email", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                password,
+                "email_code": code
+            })
+        })
+        const {error} = await response.json()
+        if (error) throw new APIError(error.replace("Error: ", ""))
+        return
+    },
+    async getPromotion() {
+        const response = await fetch("https://api.minehut.com/website/navbar/promotion")
+        return await response.json()
     },
     Session
 }
