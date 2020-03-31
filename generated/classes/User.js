@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const collection_1 = require("@discordjs/collection");
 const Server_1 = require("./Server");
 const APIError_1 = require("./APIError");
 const fetch = require("node-fetch");
@@ -88,6 +89,25 @@ class User {
         if (error)
             throw new APIError_1.APIError(error.replace("Error: ", ""));
         this.maxServers += slots;
+        this.credits -= slots * 400;
+        const response2 = await this.session.fetch(`https://api.minehut.com/user/${this.user.id}/credit/transactions`);
+        const transactions = await response2.json();
+        let transactionCollection = new collection_1.default();
+        transactions.forEach((t) => {
+            const newT = {};
+            const id = t._id;
+            Object.keys(t).forEach(k => {
+                let key = k;
+                if (key === "_id")
+                    key = "id";
+                if (key === "__v")
+                    key = "v";
+                key = key.replace(/_(.)/g, e => e[1].toUpperCase());
+                newT[key] = t[k];
+            });
+            transactionCollection.set(id, newT);
+        });
+        this.transactions = transactionCollection;
         return;
     }
     async changePassword(oldPassword, newPassword) {
@@ -104,8 +124,45 @@ class User {
     }
     async refresh() {
         const Minehut = require("../index");
-        const response = await fetch(`https://api.minehut.com/user/${this.id}`);
-        const { user } = await response.json();
+        const response1 = this.session.fetch(`https://api.minehut.com/user/${this.id}`);
+        const response2 = this.session.fetch(`https://api.minehut.com/user/${this.id}/credit/transactions`);
+        const response3 = this.session.fetch(`https://api.minehut.com/user/${this.id}/payments`);
+        let [{ MHUser }, { transactions }, { payments }] = await Promise.all((await Promise.all([response1, response2, response3])).map(r => r.json()));
+        let transactionCollection = new collection_1.default();
+        transactions.forEach((t) => {
+            const newT = {};
+            const id = t._id;
+            Object.keys(t).forEach(k => {
+                let key = k;
+                if (key === "_id")
+                    key = "id";
+                if (key === "__v")
+                    key = "v";
+                key = key.replace(/_(.)/g, e => e[1].toUpperCase());
+                newT[key] = t[k];
+            });
+            transactionCollection.set(id, newT);
+        });
+        const paymentCollection = new collection_1.default();
+        payments.forEach((p) => {
+            const newP = {};
+            const id = p._id;
+            Object.keys(p).forEach(k => {
+                let key = k;
+                if (key === "_id")
+                    key = "id";
+                if (key === "__v")
+                    key = "v";
+                key = key.replace(/_(.)/g, e => e[1].toUpperCase());
+                newP[key] = p[k];
+            });
+            paymentCollection.set(id, newP);
+        });
+        const user = {
+            ...MHUser,
+            transactions: transactionCollection,
+            payments: paymentCollection
+        };
         for (let i in user) {
             let key = i;
             let val = user[i];
@@ -130,6 +187,11 @@ class User {
                 key = key.replace(/_(.)/g, e => e[1].toUpperCase());
             this[key] = val;
         }
+        this.servers = new collection_1.default();
+        let servers = await this.session.fetch(`https://api.minehut.com/servers/${this.id}/all_data`);
+        servers = await servers.json();
+        servers = servers.map((server) => new Server_1.SessionServer(server, this, this.session));
+        servers.forEach((server) => this.servers.set(server.id, server));
         return;
     }
 }

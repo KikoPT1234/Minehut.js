@@ -1,13 +1,14 @@
 # Minehut.js
 
 ## IMPORTANT
+
 This package wouldn't have been possible without the help of my friend DeltaRays#0054.
 
 ## About
 
 Minehut.js is a TypeScript and JavaScript library that allows you to interact with the Minehut API.
 
-**Version 2.0.0**
+**Version 2.0.1**
 
 **Created by Kiko#6282**
 
@@ -34,20 +35,20 @@ const session = new Minehut.Session({
 
 The `Minehut` object contains some methods and properties:
 
-* [`Session`](#session)
-* [`getServers()`](#getservers)
-* [`getServer(name: string)`](#getserver)
-* [`getPlugins()`](#getplugins)
-* [`getPlugin(name: string)`](#getplugin)
-* [`getIcons()`](#geticons)
-* [`getIcon(name: string)`](#geticon)
-* [`getStats()`](#getstats)
-* [`getPromotion()`](#getpromotion)
-* [`signup`](#signup)
-* [`checkCode`](#checkcode)
-* [`confirmEmail`](#confirmemail)
+* [`.Session`](#session)
+* [`.getServers()`](#getservers)
+* [`.getServer(name: string)`](#getserver)
+* [`.getPlugins()`](#getplugins)
+* [`.getPlugin(name: string)`](#getplugin)
+* [`.getIcons()`](#geticons)
+* [`.getIcon(name: string)`](#geticon)
+* [`.getStats()`](#getstats)
+* [`.getPromotion()`](#getpromotion)
+* [`.signup()`](#signup)
+* [`.checkCode()`](#checkcode)
+* [`.confirmEmail()`](#confirmemail)
 
-### Session
+### .Session
 See [Session](#session-1)
 
 ### .getServers()
@@ -156,14 +157,12 @@ There are also 2 methods:
 
 ### .fetchPlugins()
 
-**Description:** Fetches plugins (doesn't return them, only assigns)
-
+**Description:** Fetches plugins (doesn't return them, only assigns)<br/>
 **Returns:** [Promise]\<void>
 
 ### .fetchIcons()
 
-**Description:** Fetches icons (doesn't return them, only assigns)
-
+**Description:** Fetches icons (doesn't return them, only assigns)<br/>
 **Returns:** [Promise]\<void>
 
 The reason these exist is because Minehut.js doesn't store the plugins and icons as their respective class instances right away, which also explains why some plugin and icon properties are marked as partial.
@@ -254,9 +253,33 @@ The `User` class represents a logged in Minehut user.
 | `transactions`       | [Collection]<[string], [Transaction](#transaction)>      |
 | `payments`           | [Collection]<[string], [Payment](#payment)>              |
 
+### .changePassword()
+
+| Parameter     | Type     |
+|:-------------:|:--------:|
+| `oldPassword` | [string] |
+| `newPassword` | [string] |
+
+**Description:** Changes the password for the logged in user.<br/>
+**Returns:** [Promise]\<void>
+
+### .purchaseSlots()
+
+| Parameter | Type     |
+|:---------:|:--------:|
+| `slots`   | [number] |
+
+**Description:** Purchases a server slot. 400 credits are required for each slot.<br/>
+**Returns:** [Promise]\<void>
+
+### .createServer()
+
+**Description:** Creates a new server using a free slot.<br/>
+**Returns:** [Promise]\<void>
+
 ### .refresh()
 
-**Description:** Re-fetches properties (doesn't return them, only assigns).
+**Description:** Re-fetches properties (doesn't return them, only assigns).<br/>
 **Returns:** [Promise]\<void>
 
 ## SessionServer
@@ -552,17 +575,6 @@ Object containing information about a payment.
 | `time`      | [number] |
 | `v`         | [number] |
 | `email`     | [number] |
-
-### Payment
-
-_id: "5abd14838e9e1e2855e1b11c"
-user: "5ab92d14f528e62f8860da98"
-gateway: "paypal"
-payment_id: "PAY-1H76100181653473ELK6RISI"
-price: 500
-time: 1522340995376
-__v: 0
-email: "carricokiko2006@gmail.com"
 
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
 [Collection]: https://discord.js.org/#/docs/collection/master/class/Collection

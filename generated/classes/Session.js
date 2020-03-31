@@ -22,9 +22,9 @@ class Session {
                 return onceLogged(new APIError_1.APIError(session.error.replace("Error: ", "")));
             this.id = session.sessionId;
             this.token = session.token;
-            let response1 = this.fetch(`https://api.minehut.com/user/${session._id}`);
-            let response2 = this.fetch(`https://api.minehut.com/user/${session._id}/credit/transactions`);
-            let response3 = this.fetch(`https://api.minehut.com/user/${session._id}/payments`);
+            const response1 = this.fetch(`https://api.minehut.com/user/${session._id}`);
+            const response2 = this.fetch(`https://api.minehut.com/user/${session._id}/credit/transactions`);
+            const response3 = this.fetch(`https://api.minehut.com/user/${session._id}/payments`);
             let [{ user }, { transactions }, { payments }] = await Promise.all((await Promise.all([response1, response2, response3])).map(r => r.json()));
             let transactionCollection = new collection_1.default();
             transactions.forEach((t) => {
