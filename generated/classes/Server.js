@@ -113,7 +113,7 @@ function isServer(server) {
     Object.keys(list).forEach((i) => {
         if (isValid === false)
             return;
-        if (!server[i])
+        if (server[i] === undefined)
             isValid = false;
         if (list[i] === "array") {
             if (!Array.isArray(server[i]))
