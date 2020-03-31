@@ -8,7 +8,7 @@ This package wouldn't have been possible without the help of my friend DeltaRays
 
 Minehut.js is a TypeScript and JavaScript library that allows you to interact with the Minehut API.
 
-**Version 2.0.1**
+**Version 2.0.2**
 
 **Created by Kiko#6282**
 
@@ -96,14 +96,28 @@ See [Session](#session-1)
 
 ### .signup()
 
+| Parameter     | Type          | Description                |
+|:-------------:|:-------------:|:--------------------------:|
+| `email`       | [string]      | The email to sign up with. |
+| `birthday`    | [string]      | A date string indicating the birthday. |
+
 **Returns:** [Promise]\<void>
 
 ### .checkCode()
+
+| Parameter     | Type          | Description                 |
+|:-------------:|:-------------:|:---------------------------:|
+| `code`        | [string]      | The code sent to the email from `Minehut.signup()`. |
 
 **Returns:** [Promise]\<void>
 **NOTE:** While this method exists, I'm (still) not sure if it is necessary for signing up. Anyways, just to be sure, you should always use [`.signup()`](#signup), [`.checkCode()`](#checkcode) and [`.confirmEmail()`](#confirmemail)
 
 ### .confirmEmail()
+
+| Parameter     | Type          | Description                |
+|:-------------:|:-------------:|:--------------------------:|
+| `code`        | [string]      | The code sent to the email from `Minehut.signup()`. |
+| `password`    | [string]      | The password to set for the account. |
 
 **Returns:** [Promise]\<void>
 
