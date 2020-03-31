@@ -22,9 +22,45 @@ class Session {
                 return onceLogged(new APIError_1.APIError(session.error.replace("Error: ", "")));
             this.id = session.sessionId;
             this.token = session.token;
-            let user = await this.fetch(`https://api.minehut.com/user/${session._id}`);
-            user = (await user.json()).user;
-            this.user = new User_1.User(user, this);
+            let response1 = this.fetch(`https://api.minehut.com/user/${session._id}`);
+            let response2 = this.fetch(`https://api.minehut.com/user/${session._id}/credit/transactions`);
+            let response3 = this.fetch(`https://api.minehut.com/user/${session._id}/payments`);
+            let [{ user }, { transactions }, { payments }] = await Promise.all((await Promise.all([response1, response2, response3])).map(r => r.json()));
+            let transactionCollection = new collection_1.default();
+            transactions.forEach((t) => {
+                const newT = {};
+                const id = t._id;
+                Object.keys(t).forEach(k => {
+                    let key = k;
+                    if (key === "_id")
+                        key = "id";
+                    if (key === "__v")
+                        key = "v";
+                    key = key.replace(/_(.)/g, e => e[1].toUpperCase());
+                    newT[key] = t[k];
+                });
+                transactionCollection.set(id, newT);
+            });
+            const paymentCollection = new collection_1.default();
+            payments.forEach((p) => {
+                const newT = {};
+                const id = p._id;
+                Object.keys(p).forEach(k => {
+                    let key = k;
+                    if (key === "_id")
+                        key = "id";
+                    if (key === "__v")
+                        key = "v";
+                    key = key.replace(/_(.)/g, e => e[1].toUpperCase());
+                    newT[key] = p[k];
+                });
+                paymentCollection.set(id, newT);
+            });
+            this.user = new User_1.User({
+                ...user,
+                transactions: transactionCollection,
+                payments: paymentCollection
+            }, this);
             this.user.servers = new collection_1.default();
             let servers = await this.fetch(`https://api.minehut.com/servers/${this.user.id}/all_data`);
             servers = await servers.json();
