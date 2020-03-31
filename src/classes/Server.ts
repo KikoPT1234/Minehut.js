@@ -131,7 +131,7 @@ function isServer(server: {[key: string]: any}) {
     let isValid: boolean | null = null
     Object.keys(list).forEach((i: string) => {
         if (isValid === false) return
-        if (!server[i]) isValid = false
+        if (server[i] === undefined) isValid = false
         if (list[i] === "array") {
             if (!Array.isArray(server[i])) isValid = false
         }
