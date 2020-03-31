@@ -23,4 +23,6 @@ export interface UserDictionary {
     maxServers: number
     serverIds: string[]
     servers?: Collection<string, SessionServer>
+    transactions: Collection<string, {[key: string]: any}>
+    payments: Collection<string, {[key: string]: any}>
 }

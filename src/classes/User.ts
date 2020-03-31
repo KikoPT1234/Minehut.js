@@ -25,7 +25,9 @@ export class User implements UserDictionary {
     }
     maxServers: number
     serverIds: string[]
-    servers?: Collection<string, SessionServer>
+    servers: Collection<string, SessionServer>
+    transactions: Collection<string, {[key: string]: any}>
+    payments: Collection<string, {[key: string]: any}>
     [key: string]: any
     constructor(user: {[key: string]: any}, session: Session) {
         if (!user) throw new Error("User not specified.")
@@ -97,6 +99,23 @@ export class User implements UserDictionary {
         const {error} = await response.json()
         if (error) throw new APIError(error.replace("Error: ", ""))
         this.maxServers += slots
+        this.credits -= slots * 400
+        const response2 = await this.session.fetch(`https://api.minehut.com/user/${this.user.id}/credit/transactions`)
+        const transactions = await response2.json()
+        let transactionCollection: Collection<string, {[key: string]: any}> = new Collection()
+        transactions.forEach((t: {[key: string]: any}) => {
+            const newT: {[key: string]: any} = {}
+            const id = t._id
+            Object.keys(t).forEach(k => {
+                let key = k
+                if (key === "_id") key = "id"
+                if (key === "__v") key = "v"
+                key = key.replace(/_(.)/g, e => e[1].toUpperCase())
+                newT[key] = t[k]
+            })
+            transactionCollection.set(id, newT)
+        })
+        this.transactions = transactionCollection
         return
     }
 
@@ -113,8 +132,41 @@ export class User implements UserDictionary {
 
     async refresh() {
         const Minehut = require("../index")
-        const response = await fetch(`https://api.minehut.com/user/${this.id}`)
-        const {user} = await response.json()
+        const response1 = this.session.fetch(`https://api.minehut.com/user/${this.id}`)
+        const response2 = this.session.fetch(`https://api.minehut.com/user/${this.id}/credit/transactions`)
+        const response3 = this.session.fetch(`https://api.minehut.com/user/${this.id}/payments`)
+        let [{MHUser}, {transactions}, {payments}] = await Promise.all((await Promise.all([response1, response2, response3])).map(r => r.json()))
+        let transactionCollection = new Collection()
+        transactions.forEach((t: {[key: string]: any}) => {
+            const newT: {[key: string]: any} = {}
+            const id = t._id
+            Object.keys(t).forEach(k => {
+                let key = k
+                if (key === "_id") key = "id"
+                if (key === "__v") key = "v"
+                key = key.replace(/_(.)/g, e => e[1].toUpperCase())
+                newT[key] = t[k]
+            })
+            transactionCollection.set(id, newT)
+        })
+        const paymentCollection = new Collection()
+        payments.forEach((p: {[key: string]: any}) => {
+            const newP: {[key: string]: any} = {}
+            const id = p._id
+            Object.keys(p).forEach(k => {
+                let key = k
+                if (key === "_id") key = "id"
+                if (key === "__v") key = "v"
+                key = key.replace(/_(.)/g, e => e[1].toUpperCase())
+                newP[key] = p[k]
+            })
+            paymentCollection.set(id, newP)
+        })
+        const user = {
+            ...MHUser,
+            transactions: transactionCollection,
+            payments: paymentCollection
+        }
         for (let i in user) {
             let key: string = i
             let val: any = user[i]
@@ -134,6 +186,11 @@ export class User implements UserDictionary {
             else key = key.replace(/_(.)/g, e => e[1].toUpperCase())
             this[key] = val
         }
+        this.servers = new Collection()
+        let servers = await this.session.fetch(`https://api.minehut.com/servers/${this.id}/all_data`)
+        servers = await servers.json()
+        servers = servers.map((server: Server) => new SessionServer(server, this, this.session))
+        servers.forEach((server: SessionServer) => this.servers.set(server.id, server))
         return
     }
 }
