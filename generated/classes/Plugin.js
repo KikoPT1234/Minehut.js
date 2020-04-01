@@ -21,3 +21,4 @@ class Plugin {
     }
 }
 exports.Plugin = Plugin;
+//# sourceMappingURL=Plugin.js.map

@@ -8,3 +8,4 @@ class APIError extends Error {
     }
 }
 exports.APIError = APIError;
+//# sourceMappingURL=APIError.js.map
