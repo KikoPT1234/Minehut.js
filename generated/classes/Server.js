@@ -72,7 +72,7 @@ class Server {
             throw new Error("Icons are already fetched.");
         const icons = await Minehut.getIcons();
         if (!this.iconIds || (this.iconIds.length === 0 && !this.iconName && !this.iconId))
-            throw new Error("No icon found.");
+            return;
         if (this.iconIds)
             this.icons = icons.filter((i) => this.iconIds.includes(i.id));
         if (this.iconName)
