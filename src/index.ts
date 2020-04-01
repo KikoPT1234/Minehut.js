@@ -17,6 +17,7 @@ const Minehut = {
     async getServers() {
         let servers = await fetch("https://api.minehut.com/servers")
         servers = await servers.json()
+        if (!servers.servers) throw new Error("Servers not found.")
         const collection: Collection<ID, Server> = new Collection()
         servers.servers.forEach((server: MHServerObj | Server) => {
             server = new Server(server)
@@ -26,7 +27,7 @@ const Minehut = {
     },
     async getServer(name: string) {
         let server = await fetch(`https://api.minehut.com/server/${name}${name.length !== 24 ? "?byName=true" : ""}`)
-        server = await server.json()
+        server = await server.json().catch((e: Error) => {throw new Error("Server not found.")})
         if (server.error) throw new Error(server.error.replace("Error: ", ""))
         const returnServer = new Server(server.server)
         return returnServer
@@ -34,6 +35,7 @@ const Minehut = {
     async getPlugins() {
         let plugins = await fetch("https://api.minehut.com/plugins_public")
         plugins = (await plugins.json()).all
+        if (!plugins) throw new Error("Server not found.")
         const collection: Collection<ID, Plugin> = new Collection()
         plugins.forEach((plugin: {[key: string]: any} | Plugin) => {
             plugin = new Plugin(plugin)
@@ -50,6 +52,7 @@ const Minehut = {
     async getIcons(available: boolean = false) {
         let icons = await fetch(`https://api.minehut.com/servers/${available ? "available_icons" : "icons"}`)
         icons = await icons.json()
+        if (!icons) throw new Error("Server not found.")
         const collection: Collection<ID, Icon> = new Collection()
         icons.forEach((icon: {[key: string]: any} | Icon) => {
             icon = new Icon(icon)

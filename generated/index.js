@@ -15,6 +15,8 @@ const Minehut = {
     async getServers() {
         let servers = await fetch("https://api.minehut.com/servers");
         servers = await servers.json();
+        if (!servers.servers)
+            throw new Error("Servers not found.");
         const collection = new collection_1.default();
         servers.servers.forEach((server) => {
             server = new Server_1.Server(server);
@@ -24,7 +26,7 @@ const Minehut = {
     },
     async getServer(name) {
         let server = await fetch(`https://api.minehut.com/server/${name}${name.length !== 24 ? "?byName=true" : ""}`);
-        server = await server.json();
+        server = await server.json().catch((e) => { throw new Error("Server not found."); });
         if (server.error)
             throw new Error(server.error.replace("Error: ", ""));
         const returnServer = new Server_1.Server(server.server);
@@ -33,6 +35,8 @@ const Minehut = {
     async getPlugins() {
         let plugins = await fetch("https://api.minehut.com/plugins_public");
         plugins = (await plugins.json()).all;
+        if (!plugins)
+            throw new Error("Server not found.");
         const collection = new collection_1.default();
         plugins.forEach((plugin) => {
             plugin = new Plugin_1.Plugin(plugin);
@@ -50,6 +54,8 @@ const Minehut = {
     async getIcons(available = false) {
         let icons = await fetch(`https://api.minehut.com/servers/${available ? "available_icons" : "icons"}`);
         icons = await icons.json();
+        if (!icons)
+            throw new Error("Server not found.");
         const collection = new collection_1.default();
         icons.forEach((icon) => {
             icon = new Icon_1.Icon(icon);
