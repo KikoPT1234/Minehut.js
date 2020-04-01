@@ -1,0 +1,1 @@
+{"version":3,"file":"APIError.js","sourceRoot":"","sources":["../../src/classes/APIError.ts"],"names":[],"mappings":";;AAAA,MAAa,QAAS,SAAQ,KAAK;IAC/B,YAAY,OAAe;QACvB,KAAK,CAAC,OAAO,CAAC,CAAA;QACd,IAAI,CAAC,IAAI,GAAG,mBAAmB,CAAC;QAChC,KAAK,CAAC,iBAAiB,CAAC,IAAI,EAAE,QAAQ,CAAC,CAAC;IAC5C,CAAC;CACJ;AAND,4BAMC"}

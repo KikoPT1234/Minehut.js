@@ -17,3 +17,4 @@ class Icon {
     }
 }
 exports.Icon = Icon;
+//# sourceMappingURL=Icon.js.map

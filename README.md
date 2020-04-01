@@ -8,7 +8,7 @@ This package wouldn't have been possible without the help of my friend DeltaRays
 
 Minehut.js is a TypeScript and JavaScript library that allows you to interact with the Minehut API.
 
-**Version 2.0.6**
+**Version 2.0.7**
 
 **Created by Kiko#6282**
 
@@ -18,10 +18,10 @@ The library uses the `Collection` class from Discord.js due to its useful method
 
 ## Example
 
-```javascript
+```typescript
 // Start server
-const Minehut = require("minehut.js")
-const session = new Minehut.Session({
+import { Session } from "minehut.js"
+const session = new Session({
     email: "hello@testmail.com",
     password: "codingisawesome"
 }, async e => {
@@ -298,15 +298,26 @@ The `User` class represents a logged in Minehut user.
 
 ## SessionServer
 
-`SessionServer` represents a server belonging to the logged in user. It extends [`Server`](#server) and only has 2 new properties:
+`SessionServer` represents a server belonging to the logged in user. It extends [`Server`](#server) and has
 
-| Property      | Type                        |
-|:-------------:|:---------------------------:|
-| `owner`       | [User](#user)               |
-| `session`     | [Session](#session-1)       |
-| `fileManager` | [FileManager](#filemanager) |
-
-It does have a ton of new methods:
+| Property            | Type                        |
+|:-------------------:|:---------------------------:|
+| `owner`             | [User](#user)               |
+| `session`           | [Session](#session-1)       |
+| `fileManager`       | [FileManager](#filemanager) |
+| `maxRam`            | [number]                    |
+| `serviceOnline`     | [boolean]                   |
+| `serverIp`          | [string]                    |
+| `serverPort`        | [number]                    |
+| `timeNoPlayers`     | [number]                    |
+| `startedAt`         | [number]                    |
+| `stoppedAt`         | [number]                    |
+| `starting`          | [boolean]                   |
+| `stopping`          | [boolean]                   |
+| `exited`            | [boolean]                   |
+| `status`            | [string]                    |
+| `metrics`           | [Object]                    |
+| `transferScheduled` | [boolean]                   |
 
 ### .start()
 
