@@ -60,16 +60,12 @@ class Server {
     }
     async fetchPlugins() {
         const Minehut = require("../index");
-        if (this.plugins)
-            throw new Error("Plugins are already fetched.");
         const plugins = await Minehut.getPlugins();
         if (this.pluginIds)
             this.plugins = plugins.filter((p) => this.pluginIds.includes(p.id));
     }
     async fetchIcons() {
         const Minehut = require("../index");
-        if (this.icons)
-            throw new Error("Icons are already fetched.");
         const icons = await Minehut.getIcons();
         if (!this.iconIds || (this.iconIds.length === 0 && !this.iconName && !this.iconId))
             return;
