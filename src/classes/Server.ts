@@ -92,7 +92,7 @@ export class Server implements ServerDictionary {
         const Minehut = require("../index")
         if (this.icons) throw new Error("Icons are already fetched.")
         const icons = await Minehut.getIcons()
-        if (!this.iconIds || (this.iconIds.length === 0 && !this.iconName && !this.iconId)) throw new Error("No icon found.")
+        if (!this.iconIds || (this.iconIds.length === 0 && !this.iconName && !this.iconId)) return
         if (this.iconIds) this.icons = icons.filter((i: {[key: string]: any}) => this.iconIds.includes(i.id))
         if (this.iconName) this.icon = icons.find((i: Icon) => i.iconName.toLowerCase() === this.iconName.toLowerCase())
         else if (this.iconId) this.icon = icons.get(this.iconId)
