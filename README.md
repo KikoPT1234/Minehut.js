@@ -21,14 +21,14 @@ The library uses the `Collection` class from Discord.js due to its useful method
 ```typescript
 // Start server
 import { Session } from "minehut.js"
-const session = new Session({
+const session = new Session()
+session.login({
     email: "hello@testmail.com",
     password: "codingisawesome"
-}, async e => {
-    if (e) return console.error(e)
+}).then(async session => {
     const server = session.servers.first()
     await server.start()
-})
+}, console.error)
 ```
 
 ## Main Object
@@ -220,29 +220,38 @@ Like the `Plugin` class, the icon class also exists just for the sake of it.
 
 ## Session
 
-`Session` is the class that manages a user's session. The constructor is the following:
+`Session` is the class that manages a user's session. The constructor takes no parameters. Instead, after instanciating the class, you should use the `.login()` method to log in:
 
-```typescript
-new Minehut.Session(credentials: Object { email: string, password: string }, callback: Function(e: APIError?))
-```
+### .login()
 
 | Parameter     | Type                                             | Description                                                   |
 |:-------------:|:------------------------------------------------:|:-------------------------------------------------------------:|
 | `credentials` | [Object] { email: [string], password: [string] } | Minehut email and password.                                   |
-| `callback`    | [Function](e: APIError?)                         | The callback function to execute after trying to log in. If an error occurred, `e` will be that error. |
 
-Once successfully logged in, the `callback` function will fire, at which point you should have access to all of the properties belonging to `Session`.
+**Description:** Logs in to Minehut using specified credentials.<br/>
+**Returns:** [Promise]<[Session](#session)>
+
+When successfully logged in, you can either use the original variable or the variable resolved by the promise to access the complete [Session](#session) object:
 
 | Property | Type          |
 |:--------:|:-------------:|
 | `user`   | [User](#user) |
 | `id`     | [string]      |
 | `token`  | [string]      |
+| `loggedIn` | [boolean]   |
 
-There's also a `.fetch()` method, but I don't recommend using it.
+There's also a `.fetch()` method, but I don't recommend using it:
 
-* `fetch(url: string, method?: string, body?: Object<any>)` - Fetches with authorization.
-    * **Returns:** [Promise]\<[Response]>
+### .fetch()
+
+| Parameter | Type                 | Default | Description |
+|:---------:|:--------------------:|:-------:|:-----------:|
+| `url`     | [string]             |         | The URL to send the request to. |
+| `method`  | [string]             | `"GET"` | The request method. |
+| `body`    | [Object] \| [string] |         | The request body.
+
+**Description:** Fetches with authorization.<br/>
+**Returns:** [Promise]\<[Response]>
 
 ## User
 
