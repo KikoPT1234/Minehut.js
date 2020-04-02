@@ -8,7 +8,7 @@ This package wouldn't have been possible without the help of my friend DeltaRays
 
 Minehut.js is a TypeScript and JavaScript library that allows you to interact with the Minehut API.
 
-**Version 2.0.7**
+**Version 2.1.1**
 
 **Created by Kiko#6282**
 
