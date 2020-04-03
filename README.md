@@ -8,7 +8,15 @@ This package wouldn't have been possible without the help of my friend DeltaRays
 
 Minehut.js is a TypeScript and JavaScript library that allows you to interact with the Minehut API.
 
-**Version 2.1.1**
+## Release 3.0.0
+
+This release is focused on the [`FileManager`](#filemanager), bringing some features I had forgotten about + the [`.watch()`](#watch) method:
+
+* Added [`FileManager.watch()`](#watch);
+* Added [`FileManager.createDir()`](#createdir);
+* Added [`FileManager.deleteFile()`](#deletefile);
+* Added [`FileManager.deleteDir()`](#deletedir);
+* [`FileManager.uploadWorld()`](#uploadworld) now supports relative paths.
 
 **Created by Kiko#6282**
 
@@ -330,12 +338,12 @@ The `User` class represents a logged in Minehut user.
 
 ### .start()
 
-**Description:** Starts the server up.</br>
+**Description:** Starts the server up.<br/>
 **Returns:** [Promise]\<void>
 
 ### .restart()
 
-**Description:** Restarts the server.</br>
+**Description:** Restarts the server.<br/>
 **Returns:** [Promise]\<void>
 
 ### .stop()
@@ -344,7 +352,7 @@ The `User` class represents a logged in Minehut user.
 |:---------:|:---------:|:-------:|:-----------------------------------:|
 | `service` | [boolean]? | `true` | Whether to stop the service or not. |
 
-**Description:** Starts the server up.</br>
+**Description:** Starts the server up.<br/>
 **Returns:** [Promise]\<void>
 
 ### .setName()
@@ -353,7 +361,7 @@ The `User` class represents a logged in Minehut user.
 |:---------:|:--------:|:--------------------:|
 | `name`    | [string] | The new server name. |
 
-**Description:** Changes the server name.</br>
+**Description:** Changes the server name.<br/>
 **Returns:** [Promise]\<void>
 
 ### .setMOTD()
@@ -362,7 +370,7 @@ The `User` class represents a logged in Minehut user.
 |:---------:|:--------:|:--------------------:|
 | `motd`    | [string] | The new server MOTD. |
 
-**Description:** Changes the server MOTD.</br>
+**Description:** Changes the server MOTD.<br/>
 **Returns:** [Promise]\<void>
 
 ### .setVisibility()
@@ -371,7 +379,7 @@ The `User` class represents a logged in Minehut user.
 |:-----------:|:---------:|:-------------------------------------:|
 | `isVisible` | [boolean] | Whether the server is visible or not. |
 
-**Description:** Changes the server visibility.</br>
+**Description:** Changes the server visibility.<br/>
 **Returns:** [Promise]\<void>
 
 ### .sendCommand()
@@ -380,7 +388,7 @@ The `User` class represents a logged in Minehut user.
 |:---------:|:--------:|:-----------------------:|
 | `command` | [string] | The command to execute. |
 
-**Description:** Sends a command to the server.</br>
+**Description:** Sends a command to the server.<br/>
 **Returns:** [Promise]\<void>
 
 ### .editProperties()
@@ -389,7 +397,7 @@ The `User` class represents a logged in Minehut user.
 |:------------:|:------------------------------------------------:|:-----------------------:|
 | `properties` | [Partial]<[ServerProperties](#serverproperties)> | The properties to edit. |
 
-**Description:** Edits the server properties.</br>
+**Description:** Edits the server properties.<br/>
 **Returns:** [Promise]\<void>
 
 ### .purchaseIcon()
@@ -398,7 +406,7 @@ The `User` class represents a logged in Minehut user.
 |:------------:|:-------------------------:|:---------------------:|
 | `identifier` | [string] \| [Icon](#icon) | The icon to purchase. |
 
-**Description:** Purchases an icon.</br>
+**Description:** Purchases an icon.<br/>
 **Returns:** [Promise]\<void>
 
 ### .setIcon()
@@ -407,7 +415,7 @@ The `User` class represents a logged in Minehut user.
 |:------------:|:-----------------------------------:|:---------------------:|
 | `identifier` | [string] \| [Icon](#icon) \| [null] | The icon to set. Don't specify anything or specify [`null`][null] to set the default icon. |
 
-**Description:** Changes the server's icon.</br>
+**Description:** Changes the server's icon.<br/>
 **Returns:** [Promise]\<void>
 
 ### .installPlugin()
@@ -416,7 +424,7 @@ The `User` class represents a logged in Minehut user.
 |:------------:|:-----------------------------:|:---------------------:|
 | `identifier` | [string] \| [Plugin](#plugin) | The plugin to install |
 
-**Description:** Installs a plugin.</br>
+**Description:** Installs a plugin.<br/>
 **Returns:** [Promise]\<void>
 
 ### .resetPlugin()
@@ -425,7 +433,7 @@ The `User` class represents a logged in Minehut user.
 |:------------:|:-----------------------------:|:--------------------:|
 | `identifier` | [string] \| [Plugin](#plugin) | The plugin to reset. |
 
-**Description:** Resets plugin data.</br>
+**Description:** Resets plugin data.<br/>
 **Returns:** [Promise]\<void>
 
 ### .uninstallPlugin()
@@ -434,7 +442,7 @@ The `User` class represents a logged in Minehut user.
 |:------------:|:-----------------------------:|:-----------------------:|
 | `identifier` | [string] \| [Plugin](#plugin) | The plugin to uninstall |
 
-**Description:** Uninstalls a plugin.</br>
+**Description:** Uninstalls a plugin.<br/>
 **Returns:** [Promise]\<void>
 
 ### .refresh()
@@ -459,7 +467,16 @@ The `FileManager` class is used to manage everything that's file-related, such a
 | `path`    | [string]? | The path to the file **without** its name. Specify an empty string if you're targeting the root directory. |
 | `name`    | [string]  | The file name.          |
 
-**Description:** Creates a file.</br>
+**Description:** Creates a file.<br/>
+**Returns:** [Promise]\<void>
+
+### .createDir()
+
+| Parameter | Type      | Description             |
+|:---------:|:---------:|:-----------------------:|
+| `path`    | [string] | The path to the directory. |
+
+**Description:** Creates a directory.<br/>
 **Returns:** [Promise]\<void>
 
 ### .editFile()
@@ -469,7 +486,7 @@ The `FileManager` class is used to manage everything that's file-related, such a
 | `path`    | [string] | The path to the file **with** its name. |
 | `content` | [string] | The new content.                        |
 
-**Description:** Edits a file.</br>
+**Description:** Edits a file.<br/>
 **Returns:** [Promise]\<void>
 
 ### .readFile()
@@ -478,8 +495,18 @@ The `FileManager` class is used to manage everything that's file-related, such a
 |:---------:|:---------:|:--------------------------------------:|
 | `path`    | [string] | The path to the file **with** its name. |
 
-**Description:** Reads a file, returning its content.</br>
+**Description:** Reads a file, returning its content.<br/>
 **Returns:** [Promise]\<[string]>
+
+### .watch()
+
+| Parameter | Type      | Description                            |
+|:---------:|:---------:|:--------------------------------------:|
+| `watchPath` | [string] | The local path to watch. |
+| `uploadPath` | [string]? | The path to upload to. Specify an empty string for the root directory. |
+
+**Description:** Watches a directory/file and uploads it to Minehut on changes/delete. Warning: Deleted files will not sync to Minehut if they're deleted while this method isn't running.<br/>
+**Returns:** [Promise]\<void>
 
 ### .readDir()
 
@@ -487,16 +514,34 @@ The `FileManager` class is used to manage everything that's file-related, such a
 |:---------:|:---------:|:--------------------------------------:|
 | `path`    | [string]? | The path to the directory. Specify an empty string for the root directory. |
 
-**Description:** Reads a directory, returning its children.</br>
-**Returns:** [Promise]\<[DirChild](#dirchild)[]>
+**Description:** Reads a directory, returning its children.<br/>
+**Returns:** [Promise]\<void>
+
+### .deleteFile()
+
+| Parameter | Type      | Description                            |
+|:---------:|:---------:|:--------------------------------------:|
+| `path`    | [string]? | The path to the file. |
+
+**Description:** Deletes a file.<br/>
+**Returns:** [Promise]\<void>
+
+### .deleteDir()
+
+| Parameter | Type      | Description                            |
+|:---------:|:---------:|:--------------------------------------:|
+| `path`    | [string]? | The path to the directory. |
+
+**Description:** Deletes a directory.<br/>
+**Returns:** [Promise]\<void>
 
 ### .uploadWorld()
 
 | Parameter  | Type      | Description                            |
 |:----------:|:---------:|:--------------------------------------:|
-| `fullPath` | [string] | The **full path** to the **zip** file. |
+| `fullPath` | [string] | The path to the **zip** file. |
 
-**Description:** Uploads a world.</br>
+**Description:** Uploads a world.<br/>
 **Returns:** [Promise]\<void>
 
 ### .uploadWorld()
@@ -505,27 +550,27 @@ The `FileManager` class is used to manage everything that's file-related, such a
 |:----------:|:---------:|:--------------------------------------:|
 | `fullPath` | [string] | The **full path** to the **zip** file. |
 
-**Description:** Uploads a world.</br>
+**Description:** Uploads a world.<br/>
 **Returns:** [Promise]\<void>
 
 ### .saveWorld()
 
-**Description:** Saves the world.</br>
+**Description:** Saves the world.<br/>
 **Returns:** [Promise]\<void>
 
 ### .resetWorld()
 
-**Description:** Resets the world. Use with caution!</br>
+**Description:** Resets the world. Use with caution!<br/>
 **Returns:** [Promise]\<void>
 
 ### .repairFiles()
 
-**Description:** Repairs the server's files.</br>
+**Description:** Repairs the server's files.<br/>
 **Returns:** [Promise]\<void>
 
 ### .resetServer()
 
-**Description:** Resets the server. Use with caution!</br>
+**Description:** Resets the server. Use with caution!<br/>
 **Returns:** [Promise]\<void>
 
 ## DirChild
