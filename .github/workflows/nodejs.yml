@@ -29,3 +29,5 @@ jobs:
     - run: npm test
       env:
         CI: true
+        EMAIL: carricokiko2006@gmail.com
+        PASSWORD: minehut1234
