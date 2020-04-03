@@ -3,6 +3,6 @@ const session = new Minehut.Session()
 session.login({
     email: process.env.EMAIL,
     password: process.env.PASSWORD
-}).then(session => {
+}).then(async session => {
     await session.servers.first().start()
 }, console.error)
