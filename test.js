@@ -4,5 +4,5 @@ session.login({
     email: process.env.EMAIL,
     password: process.env.PASSWORD
 }).then(async session => {
-    console.log(session.servers)
+    await session.user.servers.first().start()
 })
