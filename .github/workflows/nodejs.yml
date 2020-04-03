@@ -29,5 +29,5 @@ jobs:
     - run: npm test
       env:
         CI: true
-        EMAIL: ${{secrets.Email}}
-        PASSWORD: ${{secrets.Password}}
+        EMAIL: ${{ secrets.EMAIL }}
+        PASSWORD: ${{ secrets.PASSWORD }}
