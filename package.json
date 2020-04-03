@@ -20,13 +20,13 @@
   "dependencies": {
     "@discordjs/collection": "^0.1.5",
     "@types/filesystem": "0.0.29",
-    "dotenv": "^8.2.0",
     "form-data": "^3.0.0",
     "node-fetch": "^2.6.0",
     "node-watch": "^0.6.3"
   },
   "devDependencies": {
     "typescript": "^3.8.3",
-    "@types/node": "^13.11.0"
+    "@types/node": "^13.11.0",
+    "dotenv": "^8.2.0"
   }
 }
