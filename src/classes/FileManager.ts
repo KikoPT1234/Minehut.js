@@ -49,7 +49,8 @@ export class FileManager {
 
     async watch(watchPath: string, uploadPath: string = "plugins/Skript/scripts/") {
         if (watchPath === null || uploadPath === null) throw new Error("Watch and/or upload paths not specified.")
-        watchPath = watchPath.replace(/\\/g, "/")
+        watchPath = Path.normalize(watchPath.replace(/\\/g, "/")).replace(/\\/g, "/")
+        uploadPath = Path.normalize(uploadPath).replace(/\\/g, "/").replace(/\/$/, "")
         if (this.server.isOffline()) throw new Error("Service offline.")
         const update = async (path: string) => {
             if (fs.lstatSync(path).isFile()) fs.readFile(path, {encoding: "utf8"}, async (err: Error, content: string) => {
@@ -65,7 +66,7 @@ export class FileManager {
             })
         }
         const e = new Error()
-        const path = Path.join(Path.dirname(e.stack.split("\n")[2].replace(/ +at /g, "").replace(/:\d+:\d+$/, "")), watchPath)
+        const path = Path.join(Path.dirname(e.stack.split("\n")[2].replace(/ +at /g, "").replace(/:\d+:\d+$/, "")), watchPath).replace(/\\/g, "/")
         const promiseArray: Promise<void>[] = []
         if (!fs.lstatSync(watchPath).isFile()) {
             await fs.readdir(path, (err: Error, files: string[]) => {
@@ -88,21 +89,21 @@ export class FileManager {
                 if (fs.lstatSync(file).isFile()) fs.readFile(file, {encoding: "utf8"}, async (err: Error, content: string) => {
                     if (err) throw err
                     await this.editFile(`${uploadPath}/${Path.basename(file)}`, content).catch(e => {throw e})
-                    console.log(`${event.toUpperCase()} - ${Path.resolve(watchPath)} -> ${uploadPath}/${Path.basename(file)}`)
+                    console.log(`${event.toUpperCase()} - ${Path.resolve(watchPath)} -> ${uploadPath}/${Path.basename(file)}`.replace(/\\/g, "/"))
                 })
                 else {
                     await this.createDir(`${uploadPath}${file.replace(path, "")}`)
                     await fs.readdir(path, (err: Error, files: string[]) => {
                         files.forEach(file => update(`${watchPath}/${file}`))
                     })
-                    console.log(`${event.toUpperCase()} - ${watchPath}/${file} -> ${uploadPath}${file.replace(path, "")}`)
+                    console.log(`${event.toUpperCase()} - ${watchPath}/${file} -> ${uploadPath}${file.replace(path, "")}`.replace(/\\/g, "/"))
                 }
             } else {
-                await this.deleteFile(`${uploadPath}/${Path.basename(watchPath)}`).then(() => {
-                    console.log(`${event.toUpperCase()} - ${Path.resolve(watchPath)} -> ${uploadPath}/${Path.basename(file)}`)
+                await this.deleteFile(`${uploadPath}/${Path.basename(file)}`).then(() => {
+                    console.log(`${event.toUpperCase()} - ${Path.resolve(watchPath)} -> ${uploadPath}/${Path.basename(file)}`.replace(/\\/g, "/"))
                 }).catch(async () => {
                     await this.deleteDir(`${uploadPath}${file.replace(path, "").replace(/\\/g, "/")}`).then(() => {
-                        console.log(`${event.toUpperCase()} - ${file} -> ${uploadPath}${file.replace(path, "")}`)
+                        console.log(`${event.toUpperCase()} - ${file} -> ${uploadPath}${file.replace(path, "")}`.replace(/\\/g, "/"))
                     }).catch(e => {throw e})
                 })
             }
