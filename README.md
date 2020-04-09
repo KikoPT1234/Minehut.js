@@ -544,15 +544,6 @@ The `FileManager` class is used to manage everything that's file-related, such a
 **Description:** Uploads a world.<br/>
 **Returns:** [Promise]\<void>
 
-### .uploadWorld()
-
-| Parameter  | Type      | Description                            |
-|:----------:|:---------:|:--------------------------------------:|
-| `fullPath` | [string] | The **full path** to the **zip** file. |
-
-**Description:** Uploads a world.<br/>
-**Returns:** [Promise]\<void>
-
 ### .saveWorld()
 
 **Description:** Saves the world.<br/>
