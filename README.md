@@ -1,5 +1,9 @@
 # Minehut.js
 
+## DEPRECATED
+
+This package is no longer being maintained, any bug support will not be given.
+
 ## IMPORTANT
 
 This package wouldn't have been possible without the help of my friend DeltaRays#0054.
